@@ -2,9 +2,7 @@
 <article class="post">
   <h1>{{ .Title }}</h1>
   {{ if eq .Section "blog" }}
-  {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
   <div class="byline">
-    <strong>{{ site.Params.author }}</strong>
     <span>{{ with .Params.categories }}{{ index . 0 }} · {{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time></span>
   </div>
   {{ end }}

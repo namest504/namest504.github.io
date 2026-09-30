@@ -4,6 +4,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # 매일 00:10 KST. 그날이 작성일인 글이 자동으로 공개된다.
+    - cron: "10 15 * * *"
 permissions:
   contents: read
   pages: write
@@ -27,8 +30,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          submodules: recursive
           fetch-depth: 0
+      - name: Checkout posts
+        uses: actions/checkout@v5
+        with:
+          repository: namest504/blog-posts
+          ssh-key: ${{ secrets.BLOG_POSTS_DEPLOY_KEY }}
+          path: content
       - name: Setup Go
         uses: actions/setup-go@v5
         with:

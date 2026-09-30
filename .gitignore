@@ -6,3 +6,6 @@ resources/
 # 편집기
 .idea/
 .vscode/
+
+# 원고는 비공개 저장소에서 가져온다
+content/

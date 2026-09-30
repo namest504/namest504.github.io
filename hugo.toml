@@ -4,12 +4,11 @@ languageCode = "ko-KR"
 defaultContentLanguage = "ko"
 hasCJKLanguage = true
 enableRobotsTXT = true
-enableGitInfo = true
 summaryLength = 60
 
 [params]
   description = "오픈소스 코드를 읽고 고치면서 알게 된 기술 내용을, 처음 보는 사람도 따라올 수 있게 풀어 씁니다."
-  author = "임승택"
+  author = "namest504"
   github = "https://github.com/namest504"
   # 검색 등록 도구에서 받은 확인 값을 넣으면 확인용 태그가 들어갑니다.
   googleSiteVerification = ""
@@ -22,9 +21,6 @@ summaryLength = 60
 [permalinks]
   [permalinks.page]
     blog = "/blog/:contentbasename/"
-
-[frontmatter]
-  lastmod = ["lastmod", ":git", "date"]
 
 [outputs]
   home = ["HTML", "RSS"]

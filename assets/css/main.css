@@ -71,7 +71,7 @@ main { flex: 1; }
 .narrow.wide { max-width: 928px; }
 .page-title { margin: 0; font-family: var(--serif); font-size: 52px; line-height: 1.3; font-weight: 900; letter-spacing: -1.5px; }
 .page-lead { margin: 16px 0 40px; font-size: 18px; color: var(--soft); }
-.stories { border-top: 1px solid var(--rule); }
+.stories { margin-top: 40px; border-top: 1px solid var(--rule); }
 .story { display: flex; flex-direction: column; gap: 10px; padding: 28px 0; border-bottom: 1px solid var(--line); }
 .story h2 { margin: 0; font-family: var(--serif); font-size: 23px; font-weight: 900; line-height: 1.45; letter-spacing: -0.5px; }
 .story-body { line-height: 1.8; color: var(--soft); }

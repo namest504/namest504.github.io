@@ -1,0 +1,19 @@
+{{ define "main" }}
+<div class="narrow wide">
+  <h1 class="page-title">{{ .Title }}</h1>
+  <p class="page-lead">{{ .Description }}</p>
+  <div class="stories">
+    {{ range .Pages.ByDate.Reverse }}
+    <article class="story">
+      <h2>{{ .Title }}</h2>
+      <div class="story-body">{{ .Content }}</div>
+      <div class="story-meta">
+        {{ with .Params.post }}{{ with site.GetPage . }}<a class="read" href="{{ .RelPermalink }}">글로 읽기</a>{{ end }}{{ end }}
+        <span>{{ .Params.project }}에 반영</span>
+        {{ with .Params.source }}<a href="{{ . }}">변경 내용 보기</a>{{ end }}
+      </div>
+    </article>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

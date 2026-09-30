@@ -1,9 +1,59 @@
 baseURL = "https://namest504.github.io/"
-languageCode = "en-us"
-title = "My New Hugo Site"
-theme = "hugo-book"
-description = "Documentation with Hugo Book theme"
+title = "임승택의 기록"
+languageCode = "ko-KR"
+defaultContentLanguage = "ko"
+hasCJKLanguage = true
+enableRobotsTXT = true
+enableGitInfo = true
+summaryLength = 60
 
-[pagination]
-  pagerSize = 10
+[params]
+  description = "오픈소스 코드를 읽고 고치면서 알게 된 기술 내용을, 처음 보는 사람도 따라올 수 있게 풀어 씁니다."
+  author = "임승택"
+  github = "https://github.com/namest504"
+  # 검색 등록 도구에서 받은 확인 값을 넣으면 확인용 태그가 들어갑니다.
+  googleSiteVerification = ""
+  naverSiteVerification = ""
 
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+[permalinks]
+  [permalinks.page]
+    blog = "/blog/:contentbasename/"
+
+[frontmatter]
+  lastmod = ["lastmod", ":git", "date"]
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML"]
+  term = ["HTML"]
+
+[services.rss]
+  limit = 20
+
+[sitemap]
+  changeFreq = "weekly"
+  priority = 0.5
+
+[markup.highlight]
+  noClasses = false
+
+[markup.goldmark.renderer]
+  unsafe = false
+
+[[menus.main]]
+  name = "블로그"
+  pageRef = "/blog"
+  weight = 10
+[[menus.main]]
+  name = "포트폴리오"
+  pageRef = "/portfolio"
+  weight = 20
+[[menus.main]]
+  name = "소개"
+  pageRef = "/about"
+  weight = 30

@@ -1,0 +1,10 @@
+{{ define "main" }}
+<div class="columns">
+  <div class="feed">
+    <h1 class="list-title">{{ .Title }}</h1>
+    {{ partial "tabs.html" . }}
+    {{ partial "post-list.html" .RegularPages.ByDate.Reverse }}
+  </div>
+  {{ partial "sidebar.html" . }}
+</div>
+{{ end }}

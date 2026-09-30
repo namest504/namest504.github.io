@@ -153,3 +153,4 @@
 /* TextWhitespace */ :root[data-theme="dark"] .chroma .w { color:#6e7681 }
 .chroma, :root[data-theme="dark"] .chroma { background: none; }
 .bg, :root[data-theme="dark"] .bg { background: none; }
+:root[data-theme="dark"] .chroma .p, :root[data-theme="dark"] .chroma .o, :root[data-theme="dark"] .chroma .w { color: inherit; }

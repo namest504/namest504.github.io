@@ -13,7 +13,7 @@ summaryLength = 60
   github = "https://github.com/namest504"
   # 검색 등록 도구에서 받은 확인 값을 넣으면 확인용 태그가 들어갑니다.
   googleSiteVerification = ""
-  naverSiteVerification = ""
+  naverSiteVerification = "628386148512b61f1784aa84c7de33761ec86901"
 
 [taxonomies]
   category = "categories"

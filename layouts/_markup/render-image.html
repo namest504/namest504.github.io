@@ -1,0 +1,11 @@
+{{- $u := .Destination -}}
+{{- if strings.HasSuffix $u ".svg" -}}
+{{- $p := path.Join "content" .Page.File.Dir $u -}}
+{{- with os.ReadFile $p -}}
+<figure class="diagram">{{ . | safeHTML }}</figure>
+{{- else -}}
+<p><em>그림 없음: {{ $u }}</em></p>
+{{- end -}}
+{{- else -}}
+<img src="{{ $u }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
+{{- end -}}

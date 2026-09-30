@@ -50,3 +50,13 @@ git -C content add -A && git -C content commit -m "초안: <slug>"           # p
 - 어두운 화면에서 코드 구두점이 안 보이면 `assets/css/syntax.css` 끝의 dark `.p/.o/.w` 규칙이 지워진 것.
 - 관리 화면(lim-host)이 `content`에 커밋을 만든다. 작업 전 `pull` 없이 커밋하면 push가 거부된다.
 - `content/.private/`는 Hugo가 빌드에서 뺀다(점으로 시작). 식별어 목록은 여기에만 둔다(공개 저장소 금지).
+
+## 그림
+
+순서나 구조가 있어 말로 따라가기 어려운 곳에만, 드물게. `.claude/skills/write-post/diagram.py`의 `D` 클래스로
+상자·화살표·점선 구역만 써서 그리고 `content/blog/img/<이름>.svg`에 저장, 글에는 `![설명](img/<이름>.svg)`.
+색은 CSS 변수라 밝은/어두운 화면 모두 맞는다. 생성 뒤 `shot`으로 글자가 화살표와 겹치지 않는지 본다.
+
+```bash
+python3 .claude/skills/write-post/diagram.py      # 파일 안의 예제 6장을 content/blog/img/ 에 생성
+```

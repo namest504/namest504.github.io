@@ -1,0 +1,9 @@
+{{ range . }}
+<article class="feed-item">
+  <div class="meta">{{ with .Params.categories }}{{ index . 0 }}{{ end }}{{ with .Params.project }} · {{ . }}{{ end }} · <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time></div>
+  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+  <p>{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 120 }}{{ end }}</p>
+</article>
+{{ else }}
+<p class="empty">아직 올린 글이 없습니다.</p>
+{{ end }}

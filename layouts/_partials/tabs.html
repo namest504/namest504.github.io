@@ -1,0 +1,8 @@
+{{ $cur := .RelPermalink }}
+{{ $blog := site.GetPage "/blog" }}
+<nav class="tabs" aria-label="분류">
+  <a href="{{ $blog.RelPermalink }}"{{ if or .IsHome (eq $cur $blog.RelPermalink) }} aria-current="page"{{ end }}>전체</a>
+  {{ range site.Taxonomies.categories.Alphabetical }}
+  <a href="{{ .Page.RelPermalink }}"{{ if eq $cur .Page.RelPermalink }} aria-current="page"{{ end }}>{{ .Page.Title }}</a>
+  {{ end }}
+</nav>

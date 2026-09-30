@@ -1,0 +1,15 @@
+<aside class="sidebar">
+  <section>
+    <h2>이 블로그는</h2>
+    <p>백엔드 개발자 {{ site.Params.author }}이 씁니다. 오픈소스 코드를 고치다 알게 된 동작 원리를 어려운 말 없이 적습니다.</p>
+    <a href="{{ "about/" | relURL }}">소개 더 보기</a>
+  </section>
+  {{ with site.Taxonomies.tags }}
+  <section>
+    <h2>주제</h2>
+    <div class="chips">
+      {{ range .ByCount }}<a class="chip" href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a>{{ end }}
+    </div>
+  </section>
+  {{ end }}
+</aside>

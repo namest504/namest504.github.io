@@ -1,0 +1,13 @@
+{{ define "main" }}
+<section class="hero">
+  <h1>오픈소스를 고치며<br>알게 된 것들</h1>
+  <p>{{ site.Params.description }}</p>
+</section>
+<div class="columns">
+  <div class="feed">
+    {{ partial "tabs.html" . }}
+    {{ partial "post-list.html" (first 10 (where site.RegularPages "Section" "blog")) }}
+  </div>
+  {{ partial "sidebar.html" . }}
+</div>
+{{ end }}

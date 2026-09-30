@@ -44,16 +44,3 @@ summaryLength = 60
 
 [markup.goldmark.renderer]
   unsafe = false
-
-[[menus.main]]
-  name = "블로그"
-  pageRef = "/blog"
-  weight = 10
-[[menus.main]]
-  name = "포트폴리오"
-  pageRef = "/portfolio"
-  weight = 20
-[[menus.main]]
-  name = "소개"
-  pageRef = "/about"
-  weight = 30

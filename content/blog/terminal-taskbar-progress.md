@@ -1,8 +1,8 @@
 ---
 title: "터미널은 어떻게 작업 표시줄에 진행률을 그릴까"
 description: "Gradle에 Windows Terminal 지원을 넣으면서 알게 된, 프로그램과 터미널이 신호를 주고받는 방식을 풀어 봅니다."
-date: 2026-09-30T15:00:00+09:00
-draft: true
+date: 2026-09-30T15:50:00+09:00
+draft: false
 categories: ["빌드 도구"]
 tags: ["Gradle", "터미널", "Windows Terminal"]
 project: "Gradle"

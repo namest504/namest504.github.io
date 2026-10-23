@@ -60,6 +60,16 @@ def _nice(v):
     return 10 * e
 
 
+def _step(vmax):
+    """눈금이 4~6개가 되는 깔끔한 간격(1·2·5 × 10^k)."""
+    raw = vmax / 4
+    e = 10 ** math.floor(math.log10(raw))
+    for m in (1, 2, 2.5, 5, 10):
+        if m * e >= raw - 1e-12:
+            return m * e
+    return 10 * e
+
+
 def bars(name, title, rows, unit="", highlight=(), log=False, note="", out=OUT):
     """가로 막대. rows=[(이름, 값), ...]. highlight=강조할 행 번호들."""
     W, bar_h, gap, top = 680, 26, 14, 14
@@ -74,9 +84,10 @@ def bars(name, title, rows, unit="", highlight=(), log=False, note="", out=OUT):
         sc = lambda v: (math.log10(v) - lo) / (hi - lo) * plot_w
         ticks = [10 ** k for k in range(lo, hi + 1)]
     else:
-        top_v = _nice(max(vals))
+        step = _step(max(vals))
+        top_v = step * math.ceil(max(vals) / step - 1e-9)
         sc = lambda v: v / top_v * plot_w
-        ticks = [top_v * i / 4 for i in range(5)]
+        ticks = [round(step * i, 10) for i in range(int(round(top_v / step)) + 1)]
     y_end = top + len(rows) * (bar_h + gap) - gap + 6
     H = y_end + 22 + (22 if note or log else 0)
     b = []

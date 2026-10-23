@@ -6,12 +6,12 @@
   post.py preview               초안 포함 미리보기 서버(1313)를 뒤에서 띄운다
   post.py shot <slug> [--width 1280] [--dark]   미리보기 화면을 PNG로 찍는다
 """
-import argparse, datetime, os, re, subprocess, sys, tempfile, time, urllib.request
+import argparse, datetime, os, re, shutil, subprocess, sys, tempfile, time, urllib.request
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 BLOG = os.path.join(ROOT, "content", "blog")
 TERMS = os.path.join(ROOT, "content", ".private", "forbidden-terms.txt")
-HUGO = os.environ.get("HUGO", os.path.expanduser("~/.local/hugo/hugo"))
+HUGO = os.environ.get("HUGO") or next((h for h in (os.path.expanduser("~/.local/hugo/hugo"), shutil.which("hugo") or "") if h and os.path.exists(h)), "hugo")
 KST = datetime.timezone(datetime.timedelta(hours=9))
 TMP = os.environ.get("CLAUDE_JOB_DIR", tempfile.gettempdir())
 
@@ -183,7 +183,8 @@ def cmd_shot(a):
     except Exception:
         die(f"{url} 응답 없음. 먼저 post.py preview")
     out = os.path.join(TMP, f"shot-{a.slug}{'-dark' if a.dark else ''}.png")
-    args = ["chromium-browser", "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    browser = shutil.which("chromium-browser") or shutil.which("chromium") or "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    args = [browser, "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
             "--virtual-time-budget=6000", f"--window-size={a.width},{a.height}", f"--screenshot={out}"]
     if a.dark:
         args += ["--blink-settings=preferredColorScheme=0", "--force-dark-mode"]

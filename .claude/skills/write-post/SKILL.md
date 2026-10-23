@@ -60,3 +60,29 @@ git -C content add -A && git -C content commit -m "초안: <slug>"           # p
 ```bash
 python3 .claude/skills/write-post/diagram.py      # 파일 안의 예제 6장을 content/blog/img/ 에 생성
 ```
+
+## 그래프와 수치
+
+성과나 비교가 있는 글은 수치를 그래프로 보여 준다. `chart.py`의 세 함수만 쓴다(색은 사이트 변수라 밝은/어두운 화면 모두 맞는다).
+
+| 함수 | 쓰는 곳 |
+|---|---|
+| `bars(name, title, rows, unit, highlight, log)` | 전후 비교, 항목별 크기. 차이가 수십 배를 넘으면 `log=True` |
+| `grouped(name, title, groups, series, values, highlight_series)` | 같은 항목을 조건 두세 개로 잰 값 |
+| `line(name, title, xs, series, unit, marks)` | 시간에 따른 변화. `marks`로 사건(배포·압축 등) 표시 |
+
+```bash
+python3 -c 'import sys; sys.path.insert(0, ".claude/skills/write-post"); from chart import bars
+bars("slug-time.svg", "제목", unit="초", rows=[("전", 305), ("후", 2.9)], highlight=[1], log=True)'
+python3 .claude/skills/write-post/svgshot.py content/blog/img/slug-time.svg   # 밝은/어두운 PNG → Read로 확인
+```
+
+- 수치는 실제로 잰 값만. 출처(기록·로그·PR 본문)에 없는 숫자는 쓰지 않는다. 몇 번 쟀는지, 어떤 환경인지 한 줄로 밝힌다.
+- 글 첫머리 근처에 핵심 수치를 표 하나로 정리한다(전/후/차이). 표와 그래프가 같은 말을 두 번 하지 않게, 표는 정확한 값, 그래프는 크기 차이를 보여 준다.
+- 강조색은 한 계열(고친 뒤·채택한 값)에만. 그림·그래프는 글당 1~3장.
+- 파일 이름은 `<slug>-무엇.svg`로 시작해 다른 글과 겹치지 않게 한다.
+- 글끼리 링크는 공개된 글(`draft: false`)에만 건다. 초안끼리 서로 링크하지 않는다.
+
+## 맥북에서
+
+Hugo는 `PATH`의 것을 쓴다(`HUGO=`로 바꿀 수 있음). 화면 캡처는 Chrome이 있으면 그것을 쓴다.

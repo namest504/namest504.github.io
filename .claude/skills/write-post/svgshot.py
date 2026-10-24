@@ -12,7 +12,8 @@ import subprocess
 import sys
 
 JOB = os.environ.get("CLAUDE_JOB_DIR", "/tmp")
-OUT = os.path.join(JOB, "tmp", "svgshot")
+# 첫 SVG 이름별로 따로 저장한다(여럿이 동시에 찍어도 덮이지 않게)
+OUT = os.path.join(JOB, "tmp", "svgshot", os.path.splitext(os.path.basename(sys.argv[1]))[0] if len(sys.argv) > 1 else "_")
 css = sorted(glob.glob(os.path.join(JOB, "post-check-site", "css", "*.css")))
 if not css:
     sys.exit("사이트 CSS 없음: 먼저 post.py check 실행")

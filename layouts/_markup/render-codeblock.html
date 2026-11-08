@@ -3,6 +3,7 @@
   - 첫 줄 속성: ```java {file="파일 이름" link="주소" label="몇 행" diff=true}
   - 줄 끝의 `//> 설명` 또는 `#> 설명`은 그 줄 옆 설명이 된다.
   - diff=true면 각 줄의 첫 글자가 표시다: `+` 더한 줄, `-` 지운 줄, 빈칸은 그대로인 줄. 둘째 글자는 빈칸.
+  - pre로 각 줄의 들여쓰기를 HTML 압축 뒤에도 보존하고, 긴 줄은 블록 안에서 가로로 스크롤한다.
 */ -}}
 {{- $diff := .Attributes.diff -}}
 {{- $rows := slice -}}
@@ -31,12 +32,12 @@
 {{- with $.Attributes.link }}<a href="{{ . }}">{{ $.Attributes.label | default "GitHub에서 보기" }}</a>{{ end }}
 </figcaption>
 {{- end }}
-<div class="code-body chroma"><div class="code-rows">
+<div class="code-body chroma" tabindex="0"><div class="code-rows">
 {{- range $i, $r := $rows -}}
 {{- $line := index $parts (add $i 1) | default "" -}}
 {{- $line = replaceRE `</code></pre></div>\s*$` "" $line -}}
 {{- $line = replace $line "\n" "" -}}
-<div class="code-row{{ if eq $r.sign "+" }} add{{ else if eq $r.sign "-" }} del{{ end }}">{{ if $diff }}<span class="code-sign">{{ $r.sign }}</span>{{ end }}<code class="code-line"><span class="line">{{ $line | safeHTML }}</code>{{ with $r.note }}<span class="code-note">{{ . }}</span>{{ end }}</div>
+<div class="code-row{{ if eq $r.sign "+" }} add{{ else if eq $r.sign "-" }} del{{ end }}">{{ if $diff }}<span class="code-sign">{{ $r.sign }}</span>{{ end }}<pre class="code-line"><code><span class="line">{{ $line | safeHTML }}</code></pre>{{ with $r.note }}<span class="code-note">{{ . }}</span>{{ end }}</div>
 {{- end -}}
 </div></div>
 </figure>

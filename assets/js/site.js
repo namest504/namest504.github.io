@@ -75,12 +75,12 @@
         points[i + 2] = targetX;
         points[i + 3] = targetY;
       }
-      // Idle dots stay faint. Pointer feedback is stronger in the margins than behind text.
+      // Only idle texture fades behind text; pointer feedback stays visible everywhere.
       const cover = Math.max(0, Math.min(1, (x - contentLeft + 48) / 48, (contentRight + 48 - x) / 48));
       const response = Math.min(1, Math.hypot(points[i + 2] - x, points[i + 3] - y) / maxDisplacement);
-      context.globalAlpha = 0.16 * (1 - cover * 0.94) + 0.44 * response * (1 - cover * 0.78);
+      context.globalAlpha = 0.16 * (1 - cover * 0.94) + 0.44 * response;
       context.beginPath();
-      context.arc(points[i + 2], points[i + 3], 0.9 + 0.9 * response * (1 - cover * 0.5), 0, Math.PI * 2);
+      context.arc(points[i + 2], points[i + 3], 0.9 + 0.9 * response, 0, Math.PI * 2);
       context.fill();
     }
     context.globalAlpha = 1;

@@ -102,8 +102,13 @@ def check_file(path, terms):
             warns.append(f"date가 미래({d.date()}): 그날 전에는 사이트에 안 나옴")
     except (KeyError, ValueError):
         errs.append(f"date 형식 오류: {fm.get('date')}")
-    if "## 마치며" not in body:
-        errs.append("'## 마치며' 없음")
+    title = fm.get("title", "").strip().strip('"')
+    if len(title) > 40:
+        warns.append(f"제목이 김({len(title)}자): 40자 안으로")
+    if re.search(r"(기록|하기)$", title):
+        warns.append(f"제목이 '~기록/~하기'로 끝남: {title}")
+    if len(re.findall(r"^> ", body, re.M)) > 1:
+        warns.append("강조 인용문 '>'은 많아야 1개")
     if "## 코드로 보기" in body:
         errs.append("'코드로 보기' 링크 목록 금지 → 본문 중간에서 짚을 것")
     in_code = False; longest = 0

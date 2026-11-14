@@ -7,7 +7,7 @@ enableRobotsTXT = true
 summaryLength = 60
 
 [params]
-  description = "SeungTaek Lim (namest504). Open-source contributions and writing about backend code and debugging."
+  description = "SeungTaek Lim (namest504). Open-source contributions and writing about code and software projects."
   author = "SeungTaek Lim"
   handle = "namest504"
   github = "https://github.com/namest504"

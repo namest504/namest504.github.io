@@ -66,7 +66,7 @@
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--color-rule);
+  color: var(--color-muted);
   user-select: none;
 }
 
@@ -74,7 +74,7 @@
   .blog-page .year-label {
     /* Paint the opaque fill last so overlapping glyph contours stay covered. */
     color: var(--color-paper);
-    -webkit-text-stroke: 2px var(--color-rule);
+    -webkit-text-stroke: 4px var(--color-muted);
     paint-order: stroke fill;
   }
 }

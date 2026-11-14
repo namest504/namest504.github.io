@@ -4,7 +4,7 @@
     <a href="{{ site.Home.RelPermalink }}"{{ if or .IsHome (eq .Layout "about") }} aria-current="page"{{ end }}>About</a>
     <a href="{{ "contributions/" | relURL }}"{{ if eq .Layout "contributions" }} aria-current="page"{{ end }}>Contributions</a>
     <a href="{{ site.Params.github }}" rel="me">GitHub</a>
-    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch color scheme"><span aria-hidden="true">◐</span></button>
     <a href="{{ "blog/" | relURL }}"{{ if eq .Section "blog" }} aria-current="page"{{ end }}>Blog</a>
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch color scheme"><span aria-hidden="true">◐</span></button>
   </nav>
 </header>

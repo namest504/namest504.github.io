@@ -3,9 +3,39 @@
 //   The copied text is each .code-line's text joined by "\n". Notes (.code-note) sit outside
 //   .code-line, so they are never copied; diff blocks keep their +/-/space markers.
 // - Wide inline SVG diagrams that scroll sideways get a keyboard stop.
+// - Native heading links in a sticky table of contents, collapsed on narrow screens.
 (() => {
   const SUCCESS_MS = 2000;
   const FAILURE_MS = 6000;
+
+  const toc = document.querySelector('[data-article-toc]');
+  if (toc) {
+    const wide = matchMedia('(min-width: 1200px)');
+    const summary = toc.querySelector('summary');
+    const resizeToc = () => { toc.open = wide.matches; };
+    resizeToc();
+    wide.addEventListener('change', resizeToc);
+
+    toc.addEventListener('click', event => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link) return;
+      if (!wide.matches) toc.open = false;
+      // Preserve native fragment navigation while moving keyboard focus into the article.
+      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    });
+    toc.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !toc.open) return;
+      toc.open = false;
+      summary.focus({ preventScroll: true });
+    });
+    document.addEventListener('click', event => {
+      if (!wide.matches && toc.open && !toc.contains(event.target)) toc.open = false;
+    });
+  }
 
   function blockText(figure) {
     return Array.from(figure.querySelectorAll('.code-line'), (line) => line.textContent).join('\n');

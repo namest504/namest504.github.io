@@ -2,6 +2,17 @@
 {{ define "main" }}
 {{- $isPost := eq .Section "blog" -}}
 {{- $list := .CurrentSection -}}
+{{- if $isPost }}
+{{- $toc := .TableOfContents }}
+{{- if strings.Contains $toc "<a " }}
+<aside class="article-toc" aria-label="글 목차">
+  <details data-article-toc>
+    <summary>목차</summary>
+    <div class="toc-links">{{ $toc }}</div>
+  </details>
+</aside>
+{{- end }}
+{{- end }}
 <article class="post">
   <header class="post-header">
     {{- if $isPost }}

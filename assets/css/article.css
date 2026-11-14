@@ -601,3 +601,89 @@
     padding-left: 0;
   }
 }
+
+/* The rail follows the article; narrow screens use an anchored disclosure. */
+.article-page .article-toc {
+  position: sticky;
+  top: var(--space-lg);
+  z-index: 3;
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-meta);
+  line-height: 1.6;
+}
+.article-toc details {
+  position: relative;
+  border: var(--rule-thin) solid var(--color-rule);
+  border-radius: var(--radius-small);
+  background: var(--color-paper);
+}
+.article-toc summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-ink);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.article-toc summary::-webkit-details-marker { display: none; }
+.article-toc summary::after { content: '+'; font-family: var(--font-mono); }
+.article-toc details[open] > summary::after { content: '−'; }
+.article-toc .toc-links {
+  position: absolute;
+  top: 100%;
+  left: -1px;
+  right: -1px;
+  max-height: min(60vh, 480px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--rule-thin) solid var(--color-rule);
+  border-radius: 0 0 var(--radius-small) var(--radius-small);
+  background: var(--color-paper);
+}
+.article-toc ul { list-style: none; margin: 0; padding: 0; }
+.article-toc ul ul { padding-left: var(--space-sm); }
+.article-toc a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: var(--space-2xs);
+  border: 0;
+  color: var(--color-muted);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.article-toc a:hover { color: var(--color-ink); }
+@media (min-width: 1200px) {
+  .article-page .article-toc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(100% + 32px);
+    width: min(216px, calc(50vw - 396px));
+    margin: 0;
+  }
+  .article-toc details {
+    position: sticky;
+    top: var(--space-lg);
+    border: 0;
+    border-left: var(--rule-thin) solid var(--color-rule);
+    border-radius: 0;
+  }
+  .article-toc .toc-links {
+    position: static;
+    max-height: calc(100dvh - 104px);
+    border: 0;
+    border-radius: 0;
+    padding-top: 0;
+  }
+  .article-toc a { min-height: 32px; }
+}
+@media (max-width: 1199px) {
+  .article-page .post-body h2,
+  .article-page .post-body h3 { scroll-margin-top: var(--space-2xl); }
+}

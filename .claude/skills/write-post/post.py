@@ -85,11 +85,13 @@ def check_file(path, terms):
     for k in ("title", "description", "date", "draft", "categories", "tags"):
         if k not in fm:
             errs.append(f"머리말에 {k} 없음")
-    desc = fm.get("description", "")
+    desc = fm.get("description", "").strip().strip('"')
     if not desc:
         errs.append("description 비어 있음")
-    elif re.search(r"(풀어 봅니다|이야기입니다|정리했습니다|살펴봅니다|알아봅니다)\.?$", desc):
+    elif re.search(r"(풀어 봅니다|이야기입니다|정리했습니다|정리합니다|살펴봅니다|알아봅니다|풀이입니다|기록입니다|기록합니다|모음입니다)\.?$", desc):
         errs.append(f"description이 소개 문장: {desc}")
+    elif len(desc) > 80:
+        warns.append(f"description이 김({len(desc)}자): 70자 안팎으로")
     if fm.get("categories", "").count(",") > 0:
         errs.append("categories는 하나만")
     if not re.match(r'^\["[A-Za-z][^"]*"\]$', fm.get("categories", "")):

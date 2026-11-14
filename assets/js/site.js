@@ -7,7 +7,8 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)');
   const spacing = 32;
-  const radius = 140;
+  const radius = 180;
+  const maxDisplacement = 20;
   let width = 0;
   let height = 0;
   let points = new Float32Array(0);
@@ -59,7 +60,7 @@
         const distanceSquared = dx * dx + dy * dy;
         if (distanceSquared > 0 && distanceSquared < radius * radius) {
           const distance = Math.sqrt(distanceSquared);
-          const displacement = 12 * (1 - distance / radius) ** 2;
+          const displacement = maxDisplacement * (1 - distance / radius) ** 2;
           targetX += dx / distance * displacement;
           targetY += dy / distance * displacement;
         }
@@ -74,11 +75,12 @@
         points[i + 2] = targetX;
         points[i + 3] = targetY;
       }
-      // Keep the reading column 94% quieter, fading across its outer 48px.
+      // Idle dots stay faint. Pointer feedback is stronger in the margins than behind text.
       const cover = Math.max(0, Math.min(1, (x - contentLeft + 48) / 48, (contentRight + 48 - x) / 48));
-      context.globalAlpha = 0.16 * (1 - cover * 0.94);
+      const response = Math.min(1, Math.hypot(points[i + 2] - x, points[i + 3] - y) / maxDisplacement);
+      context.globalAlpha = 0.16 * (1 - cover * 0.94) + 0.44 * response * (1 - cover * 0.78);
       context.beginPath();
-      context.arc(points[i + 2], points[i + 3], 0.9, 0, Math.PI * 2);
+      context.arc(points[i + 2], points[i + 3], 0.9 + 0.9 * response * (1 - cover * 0.5), 0, Math.PI * 2);
       context.fill();
     }
     context.globalAlpha = 1;

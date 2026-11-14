@@ -1,8 +1,8 @@
 (() => {
-  let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  let theme = 'dark';
   try {
     const stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') theme = stored;
-  } catch { /* The system preference still works when storage is unavailable. */ }
+  } catch { /* Keep the dark default when storage is unavailable. */ }
   document.documentElement.dataset.theme = theme;
 })();

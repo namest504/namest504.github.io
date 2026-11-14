@@ -76,16 +76,17 @@ def compare(before, after):
     lb, la = C(LINK_RE.findall(before)), C(LINK_RE.findall(after))
     if lb != la:
         issues.append(f"링크 주소가 다름: 빠짐 {dict(lb - la)} / 생김 {dict(la - lb)}")
-    cb, ca = set(ICODE_RE.findall(before)), set(ICODE_RE.findall(after))
+    # 횟수까지 비교한다. "최소 5개, 최대 5개"에서 5 하나가 빠져도 잡혀야 한다.
+    cb, ca = C(ICODE_RE.findall(before)), C(ICODE_RE.findall(after))
     if cb != ca:
-        issues.append(f"인라인 코드가 다름: 빠짐 {sorted(cb - ca)[:6]} / 생김 {sorted(ca - cb)[:6]}")
+        issues.append(f"인라인 코드가 다름: 빠짐 {dict(cb - ca)} / 생김 {dict(ca - cb)}")
     hb, ha = HEAD_RE.findall(before), HEAD_RE.findall(after)
     if hb != ha:
         issues.append(f"헤딩 단계가 다름: {hb} → {ha}")
-    nb = set(NUM_RE.findall(strip_numbers_scope(before)))
-    na = set(NUM_RE.findall(strip_numbers_scope(after)))
+    nb = C(NUM_RE.findall(strip_numbers_scope(before)))
+    na = C(NUM_RE.findall(strip_numbers_scope(after)))
     if nb != na:
-        issues.append(f"숫자가 다름: 빠짐 {sorted(nb - na)[:8]} / 생김 {sorted(na - nb)[:8]}")
+        issues.append(f"숫자가 다름: 빠짐 {dict(nb - na)} / 생김 {dict(na - nb)}")
     return issues
 
 

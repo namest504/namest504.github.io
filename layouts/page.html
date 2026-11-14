@@ -1,24 +1,49 @@
+{{ define "page-class" }}page--reading article-page{{ end }}
 {{ define "main" }}
+{{- $isPost := eq .Section "blog" -}}
+{{- $list := .CurrentSection -}}
 <article class="post">
-  <h1>{{ .Title }}</h1>
-  {{ if eq .Section "blog" }}
-  <div class="byline">
-    <span>{{ with .Params.categories }}{{ index . 0 }} · {{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time></span>
-  </div>
-  {{ end }}
-  <div class="body">
+  <header class="post-header">
+    {{- if $isPost }}
+    <a class="post-back" href="{{ $list.RelPermalink }}"><span aria-hidden="true">←</span> Blog</a>
+    {{- end }}
+    <h1>{{ .Title }}</h1>
+    {{- if $isPost }}
+    <p class="post-meta">
+      {{- with .Params.categories }}
+      {{- $name := index . 0 }}
+      {{- with $.GetTerms "categories" }}<a href="{{ (index . 0).RelPermalink }}">{{ $name }}</a>{{ else }}<span>{{ $name }}</span>{{ end }}
+      <span aria-hidden="true">·</span>
+      {{- end }}
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time>
+    </p>
+    {{- end }}
+  </header>
+
+  <div class="post-body">
     {{ .Content }}
   </div>
-  {{ with .GetTerms "tags" }}
-  <div class="chips">
-    {{ range . }}<a class="chip" href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
-  </div>
-  {{ end }}
-  {{ with .Params.source }}
-  <div class="source">
-    <span>관련 변경 내용</span>
-    <a href="{{ .url }}">{{ .name }}</a>
-  </div>
-  {{ end }}
+
+  {{- $tags := .GetTerms "tags" }}
+  {{- if or $tags .Params.source $isPost }}
+  <footer class="post-footer">
+    {{- with $tags }}
+    <ul class="post-tags" aria-label="태그">
+      {{- range . }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+    {{- with .Params.source }}
+    <p class="post-source">
+      <span>관련 변경 내용</span>
+      <a href="{{ .url }}">{{ .name }}<span class="external-arrow" aria-hidden="true">↗</span></a>
+    </p>
+    {{- end }}
+    {{- if $isPost }}
+    <a class="post-back post-back--end" href="{{ $list.RelPermalink }}"><span aria-hidden="true">←</span> 글 목록으로</a>
+    {{- end }}
+  </footer>
+  {{- end }}
 </article>
 {{ end }}

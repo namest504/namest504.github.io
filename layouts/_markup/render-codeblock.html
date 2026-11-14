@@ -1,11 +1,15 @@
 {{- /*
   코드 블록 표현 규칙
   - 첫 줄 속성: ```java {file="파일 이름" link="주소" label="몇 행" diff=true}
-  - 줄 끝의 `//> 설명` 또는 `#> 설명`은 그 줄 옆 설명이 된다.
+  - 줄 끝의 `//> 설명` 또는 `#> 설명`은 그 줄 아래 설명(.code-note)이 된다. 설명은 복사되지 않는다.
   - diff=true면 각 줄의 첫 글자가 표시다: `+` 더한 줄, `-` 지운 줄, 빈칸은 그대로인 줄. 둘째 글자는 빈칸.
-  - pre로 각 줄의 들여쓰기를 HTML 압축 뒤에도 보존하고, 긴 줄은 블록 안에서 가로로 스크롤한다.
+    화면과 복사 결과에는 표시 바로 뒤에 코드가 붙는다(`+코드`, 통합 diff 형식).
+  - 블록 전체가 pre 하나라서 HTML 압축 뒤에도 들여쓰기와 빈 줄이 그대로 남는다.
+    줄마다 .code-line 하나이고, 줄 사이에는 줄바꿈 문자만 둔다. 긴 줄은 블록 안에서 가로로 스크롤한다.
+  - 복사 버튼(assets/js/article.js)은 .code-line의 글자만 줄바꿈으로 이어 붙인다.
 */ -}}
 {{- $diff := .Attributes.diff -}}
+{{- $type := .Type | default "text" -}}
 {{- $rows := slice -}}
 {{- $clean := slice -}}
 {{- range split (strings.TrimRight "\n" .Inner) "\n" -}}
@@ -13,6 +17,7 @@
   {{- $sign := "" -}}
   {{- $note := "" -}}
   {{- if $diff -}}
+    {{- $sign = " " -}}
     {{- if gt (len $l) 0 }}{{ $sign = substr $l 0 1 }}{{ end -}}
     {{- if gt (len $l) 2 }}{{ $l = substr $l 2 }}{{ else }}{{ $l = "" }}{{ end -}}
   {{- end -}}
@@ -23,21 +28,44 @@
   {{- $clean = $clean | append $l -}}
   {{- $rows = $rows | append (dict "sign" $sign "note" $note) -}}
 {{- end -}}
-{{- $hl := transform.Highlight (delimit $clean "\n") (.Type | default "text") "lineNos=false" -}}
+{{- $hl := transform.Highlight (delimit $clean "\n") $type "lineNos=false" -}}
 {{- $parts := split $hl `<span class="line">` -}}
-<figure class="code{{ if $diff }} is-diff{{ end }}">
-{{- with .Attributes.file }}
-<figcaption>
-<span class="code-file">{{ . }}</span>
-{{- with $.Attributes.link }}<a href="{{ . }}">{{ $.Attributes.label | default "GitHub에서 보기" }}</a>{{ end }}
-</figcaption>
-{{- end }}
-<div class="code-body chroma" tabindex="0"><div class="code-rows">
+{{- $langs := dict
+  "bash" "Bash" "go" "Go" "groovy" "Groovy" "html" "HTML" "java" "Java" "javascript" "JavaScript"
+  "js" "JavaScript" "json" "JSON" "kotlin" "Kotlin" "powershell" "PowerShell" "python" "Python"
+  "rust" "Rust" "sh" "Shell" "sql" "SQL" "ts" "TypeScript" "typescript" "TypeScript" "xml" "XML" "yaml" "YAML"
+-}}
+{{- $lang := "" -}}
+{{- if ne $type "text" }}{{ $lang = index $langs $type | default $type }}{{ end -}}
+{{- $label := .Attributes.label | default "" -}}
+{{- if and .Attributes.link (not $label) }}{{ $label = "GitHub에서 보기" }}{{ end -}}
+{{- $aria := slice -}}
+{{- with .Attributes.file }}{{ $aria = $aria | append . }}{{ else }}{{ with $lang }}{{ $aria = $aria | append . }}{{ end }}{{ $aria = $aria | append "코드" }}{{ end -}}
+{{- with $label }}{{ $aria = $aria | append . }}{{ end -}}
+{{- if $diff }}{{ $aria = $aria | append "변경 내용" }}{{ end -}}
+<figure class="code-figure{{ if $diff }} is-diff{{ end }}" data-code-block>
+<figcaption class="code-head">
+{{- with .Attributes.file }}<span class="code-file">{{ . }}</span>{{ else }}{{ with $lang }}<span class="code-lang">{{ . }}</span>{{ end }}{{ end -}}
+{{- with .Attributes.link }}<a class="code-source" href="{{ . }}">{{ $label }}</a>{{ else }}{{ with $label }}<span class="code-label">{{ . }}</span>{{ end }}{{ end -}}
+<span class="code-actions"><span class="code-status" role="status" aria-live="polite"></span>
+{{- if $diff -}}
+<button class="code-copy" type="button" data-copy-code aria-label="Copy diff, including + and - markers" hidden>Copy diff</button>
+{{- else -}}
+<button class="code-copy" type="button" data-copy-code hidden>Copy</button>
+{{- end -}}
+</span></figcaption>
+<pre class="code-pre chroma" tabindex="0" aria-label="{{ delimit $aria " " }}"><code class="language-{{ $type }}" data-lang="{{ $type }}">
 {{- range $i, $r := $rows -}}
 {{- $line := index $parts (add $i 1) | default "" -}}
 {{- $line = replaceRE `</code></pre></div>\s*$` "" $line -}}
 {{- $line = replace $line "\n" "" -}}
-<div class="code-row{{ if eq $r.sign "+" }} add{{ else if eq $r.sign "-" }} del{{ end }}">{{ if $diff }}<span class="code-sign">{{ $r.sign }}</span>{{ end }}<pre class="code-line"><code><span class="line">{{ $line | safeHTML }}</code></pre>{{ with $r.note }}<span class="code-note">{{ . }}</span>{{ end }}</div>
+{{- $line = replaceRE `</span>$` "" $line -}}
+{{- if $i }}{{ "\n" }}{{ end -}}
+<span class="code-line{{ if eq $r.sign "+" }} is-add{{ else if eq $r.sign "-" }} is-del{{ end }}">
+{{- if $diff }}<span class="code-sign">{{ $r.sign }}</span>{{ end -}}
+{{- $line | safeHTML -}}
+</span>
+{{- with $r.note }}<span class="code-note">{{ . }}</span>{{ end -}}
 {{- end -}}
-</div></div>
+</code></pre>
 </figure>

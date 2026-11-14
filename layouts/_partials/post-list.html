@@ -1,9 +1,24 @@
-{{ range . }}
-<article class="feed-item">
-  <div class="meta">{{ with .Params.categories }}{{ index . 0 }} · {{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time></div>
-  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-  <p>{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 120 }}{{ end }}</p>
-</article>
-{{ else }}
-<p class="empty">아직 올린 글이 없습니다.</p>
-{{ end }}
+{{- /* 받은 글 목록(최신 글이 먼저)을 연도별로 나눠 보여 준다. 페이지를 나누는 쪽은 부르는 템플릿이 맡는다. */ -}}
+{{- range .GroupByDate "2006" }}
+<section class="year-group" aria-labelledby="year-{{ .Key }}">
+  <h2 class="year-label" id="year-{{ .Key }}">{{ .Key }}</h2>
+  <ol class="post-list">
+    {{- range .Pages }}
+    <li class="post-item">
+      <a class="post-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <p class="post-meta">
+        {{- with .Params.categories }}<span>{{ index . 0 }}</span><span aria-hidden="true">·</span>{{ end -}}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time>
+      </p>
+      {{- with .Description }}
+      <p class="post-summary">{{ . }}</p>
+      {{- else }}
+      {{- with .Summary | plainify | truncate 120 }}<p class="post-summary">{{ . }}</p>{{ end }}
+      {{- end }}
+    </li>
+    {{- end }}
+  </ol>
+</section>
+{{- else }}
+<p class="post-empty">아직 올린 글이 없습니다.</p>
+{{- end }}

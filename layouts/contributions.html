@@ -1,0 +1,68 @@
+{{ define "page-class" }}page--wide contributions-page{{ end }}
+{{ define "main" }}
+{{- $data := site.Data.contributions -}}
+{{- $arrow := `<span class="external-arrow" aria-hidden="true">↗</span>` | safeHTML -}}
+<h1 class="sr-only">{{ .Title }}</h1>
+<div class="tabs contrib-tabs" role="tablist" aria-label="Contributions" hidden>
+  <button id="selected-tab" type="button" role="tab" aria-controls="selected-panel" aria-selected="true" tabindex="0">Selected Contributions</button>
+  <button id="all-tab" type="button" role="tab" aria-controls="all-panel" aria-selected="false" tabindex="-1">All Contributions</button>
+</div>
+<section id="selected-panel" class="tab-panel" aria-labelledby="selected-heading">
+  <h2 id="selected-heading" class="contrib-panel-title">Selected Contributions</h2>
+  {{- range $data.selected }}
+  <article class="contribution"{{ with .id }} id="{{ . }}"{{ end }}>
+    <div class="record-meta"><span class="project">{{ .project }}</span><span class="status">{{ .status }}</span></div>
+    <h3>{{ .title }}</h3>
+    <p>{{ .summary }}</p>
+    <div class="record-links">
+      {{- range .links -}}
+      {{- if .url -}}
+      <a{{ if .source }} class="source"{{ end }} href="{{ .url }}"{{ with .hreflang }} hreflang="{{ . }}"{{ end }}>{{ .label }} {{ $arrow }}</a>
+      {{- else -}}
+      <span class="project">{{ .label }}</span>
+      {{- end -}}
+      {{- end -}}
+    </div>
+    {{- with .detail }}
+    <details>
+      <summary>{{ .question }}</summary>
+      <div class="detail">
+        {{- range .paragraphs }}
+        <p>{{ with .lead }}<strong>{{ . }}</strong> {{ end }}{{ .text }}</p>
+        {{- end }}
+        {{- with .link }}
+        <a href="{{ .url }}">{{ .label }} {{ $arrow }}</a>
+        {{- end }}
+      </div>
+    </details>
+    {{- end }}
+  </article>
+  {{- end }}
+</section>
+<section id="all-panel" class="tab-panel" aria-labelledby="all-heading">
+  <h2 id="all-heading" class="contrib-panel-title">All Contributions</h2>
+  {{- range $i, $p := $data.projects }}
+  {{- $count := len $p.entries }}
+  <article class="project-group">
+    <div class="project-heading">
+      <h3 id="project-{{ $i }}-title"><a href="{{ $p.searchUrl }}" title="{{ $p.searchTitle }}">{{ $p.name }} {{ $arrow }}</a></h3>
+      <span class="project-count">{{ $count }} {{ cond (eq $count 1) "entry" "entries" }}</span>
+      <button class="project-toggle" type="button" aria-expanded="true" aria-controls="project-{{ $i }}-entries" aria-label="Hide contributions to {{ $p.name }}" data-project="{{ $p.name }}" hidden><span>{{ $count }} {{ cond (eq $count 1) "entry" "entries" }}</span><span class="toggle-sign" aria-hidden="true">−</span></button>
+    </div>
+    <div id="project-{{ $i }}-entries" class="project-body" role="region" aria-labelledby="project-{{ $i }}-title">
+      <ul class="pr-list">
+        {{- range $p.entries }}
+        <li class="pr-entry">
+          <h4><a href="{{ .url }}"><span class="pr-id">{{ .id }}</span>{{ .title }} {{ $arrow }}</a></h4>
+          <p class="pr-caption">{{ .caption }}</p>
+        </li>
+        {{- end }}
+      </ul>
+      {{- with $p.note }}
+      <p class="adoption-note">{{ range . }}{{ if .url }}<a href="{{ .url }}">{{ .label }} {{ $arrow }}</a>{{ else }}{{ .text }}{{ end }}{{ end }}</p>
+      {{- end }}
+    </div>
+  </article>
+  {{- end }}
+</section>
+{{ end }}

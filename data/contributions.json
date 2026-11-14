@@ -1,0 +1,560 @@
+{
+  "selected": [
+    {
+      "project": "Apache Pulsar",
+      "status": "Merged",
+      "title": "Non-blocking retries in TableView",
+      "summary": "Replaced sleeps on the callback thread with scheduled retries. Also checked how pending retries could retain a closed view.",
+      "links": [
+        {
+          "label": "Code & review",
+          "url": "https://github.com/apache/pulsar/pull/26672"
+        },
+        {
+          "label": "Follow-up #26988",
+          "url": "https://github.com/apache/pulsar/pull/26988",
+          "source": true
+        }
+      ],
+      "detail": {
+        "question": "What did I check?",
+        "paragraphs": [
+          {
+            "text": "A reviewer pointed out the sleep on the callback thread. I also found that repeated failures could grow the call stack, then moved retries to a scheduler."
+          },
+          {
+            "text": "Cancelling the future did not release the closed view. I checked this with a weak reference. Later review measurements also led me to undo a change that delayed later reads after a message had already been consumed."
+          }
+        ],
+        "link": {
+          "label": "Read the review thread",
+          "url": "https://github.com/apache/pulsar/pull/26672#discussion_r4202725729"
+        }
+      }
+    },
+    {
+      "project": "Apache Pulsar",
+      "status": "Merged",
+      "title": "Message-mapped TableView (PIP-445)",
+      "summary": "Worked on the proposal and implementation so callers can build TableView values from message properties and metadata, rather than just the payload.",
+      "links": [
+        {
+          "label": "Code & review",
+          "url": "https://github.com/apache/pulsar/pull/24809"
+        },
+        {
+          "label": "Proposal PIP-445",
+          "url": "https://github.com/apache/pulsar/pull/24842",
+          "source": true
+        }
+      ],
+      "detail": {
+        "question": "Who worked on what?",
+        "paragraphs": [
+          {
+            "lead": "My part.",
+            "text": "I wrote the initial implementation in response to a user request, revised the proposal, and ran the vote. I also handled message pooling for mapped views."
+          },
+          {
+            "lead": "Shared design.",
+            "text": "lhotari proposed the mapper approach and contributed the final error-handling interface, constraints, and implementation changes."
+          }
+        ],
+        "link": {
+          "label": "Read the design review",
+          "url": "https://github.com/apache/pulsar/pull/24809#issuecomment-5718952218"
+        }
+      }
+    },
+    {
+      "id": "producer-encryption",
+      "project": "Apache Pulsar",
+      "status": "Merged",
+      "title": "Encryption key loading and producer cleanup",
+      "summary": "Closed producers after key-loading failures and made creation wait for the first successful key load, covering both cleanup and asynchronous readiness.",
+      "links": [
+        {
+          "label": "Cleanup #27024",
+          "url": "https://github.com/apache/pulsar/pull/27024"
+        },
+        {
+          "label": "Key readiness #27112",
+          "url": "https://github.com/apache/pulsar/pull/27112",
+          "source": true
+        }
+      ],
+      "detail": {
+        "question": "Why was this a race?",
+        "paragraphs": [
+          {
+            "text": "The connection and key load run independently. A slow key reader could let create() succeed before a key was available. A separate failure path completed the creation future but left the producer registered."
+          },
+          {
+            "text": "The fixes close failed producers and wait for the first key load before reporting successful creation. Regression coverage includes delayed key readers, cleanup, close, and reconnect while key loading is pending."
+          }
+        ]
+      }
+    },
+    {
+      "id": "consumer-reconnect",
+      "project": "Apache Pulsar",
+      "status": "Merged",
+      "title": "Ordering ACK and FLOW after reconnect",
+      "summary": "Moved the pending ACK flush before FLOW on the same connection, preventing already-acknowledged messages from being redelivered during reconnect.",
+      "links": [
+        {
+          "label": "Code & review",
+          "url": "https://github.com/apache/pulsar/pull/27062"
+        },
+        {
+          "label": "#27062"
+        }
+      ],
+      "detail": {
+        "question": "Why did the order matter?",
+        "paragraphs": [
+          {
+            "text": "FLOW let the broker resume delivery before it received the queued acknowledgements. Flushing those acknowledgements also cleared the client's pending-ACK state, so its duplicate check could no longer recognize the redelivered messages."
+          },
+          {
+            "text": "Sending ACKs first on the same connection makes the broker process them before it resumes delivery, avoiding that reconnect race."
+          }
+        ]
+      }
+    },
+    {
+      "project": "Spring Framework",
+      "status": "Merged",
+      "title": "Reading an uploaded file more than once",
+      "summary": "Small uploads shared a buffer's read position, so a second read returned nothing. Fixed repeated reads and copies to behave the same for files stored in memory and on disk.",
+      "links": [
+        {
+          "label": "Code & tests",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37531"
+        },
+        {
+          "label": "#37531"
+        }
+      ],
+      "detail": {
+        "question": "What do the tests cover?",
+        "paragraphs": [
+          {
+            "text": "The tests vary the size threshold to store the same file in memory and on disk. They read it twice, then copy it to another file and check that the content is still intact."
+          }
+        ]
+      }
+    },
+    {
+      "project": "Gradle",
+      "status": "Merged",
+      "title": "Build progress in Windows Terminal",
+      "summary": "Enabled taskbar build progress in Windows Terminal, including WSL. Checked terminal detection and the emitted control sequences across WSL, PowerShell, and cmd.",
+      "links": [
+        {
+          "label": "Read in Korean",
+          "url": "https://namest504.github.io/blog/terminal-taskbar-progress/",
+          "hreflang": "ko"
+        },
+        {
+          "label": "PR #39260",
+          "url": "https://github.com/gradle/gradle/pull/39260",
+          "source": true
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Apache Pulsar",
+      "searchUrl": "https://github.com/apache/pulsar/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#27449",
+          "url": "https://github.com/apache/pulsar/pull/27449",
+          "title": "Re-run the migration check until ClusterMigrationTest producers can migrate",
+          "caption": "Repeats the migration check until replication backlog drains, matching the broker's periodic behavior instead of relying on a single check."
+        },
+        {
+          "id": "#27448",
+          "url": "https://github.com/apache/pulsar/pull/27448",
+          "title": "Wait for replication markers in the deduplication test",
+          "caption": "Waiting for a new snapshot id raced the 100 ms snapshot timer; the test now waits for the replication marker entry written after each message."
+        },
+        {
+          "id": "#27447",
+          "url": "https://github.com/apache/pulsar/pull/27447",
+          "title": "Export the Prometheus Java client 1.x registry from the Functions worker /metrics",
+          "caption": "The standalone worker writes the 1.x default registry after its existing simpleclient output, so cache metrics stay visible as collectors move to the new client."
+        },
+        {
+          "id": "#27350",
+          "url": "https://github.com/apache/pulsar/pull/27350",
+          "title": "Expose the Prometheus Java client 1.x registry in broker and proxy metrics",
+          "caption": "Broker and proxy /metrics now write both registries; a byte-stream filter adds the cluster label to 1.x output, and in-process bookies get a separate registry."
+        },
+        {
+          "id": "#27112",
+          "url": "https://github.com/apache/pulsar/pull/27112",
+          "title": "Wait for the first encryption key load before completing producer creation",
+          "caption": "With a slow key reader, the connection finished first and create() returned a producer with no key; creation now also waits for the first key load."
+        },
+        {
+          "id": "#27062",
+          "url": "https://github.com/apache/pulsar/pull/27062",
+          "title": "Flush pending acks before the flow command when a consumer reconnects",
+          "caption": "Sending permits first let the broker redeliver messages whose acks were still queued; flushing acks first on the same connection avoids handing duplicates to applications."
+        },
+        {
+          "id": "#27061",
+          "url": "https://github.com/apache/pulsar/pull/27061",
+          "title": "Stop the partition update timer when a partitioned producer fails during creation",
+          "caption": "A producer that closed inside its constructor still scheduled a timer whose finally block kept rescheduling it; the timer now stops once the producer has closed or failed."
+        },
+        {
+          "id": "#27025",
+          "url": "https://github.com/apache/pulsar/pull/27025",
+          "title": "Stub the cancellable listener in PulsarLedgerCreateRecoveryTest",
+          "caption": "Returns a non-null cancellation handle from the mocked metadata store, preventing cleanup from failing after the listener API changed."
+        },
+        {
+          "id": "#27024",
+          "url": "https://github.com/apache/pulsar/pull/27024",
+          "title": "Close the producer when its encryption key cannot be loaded",
+          "caption": "A failed key load failed create() but left the producer connecting and registered on the broker, so retries piled up producers; it is now closed and removed."
+        },
+        {
+          "id": "#26988",
+          "url": "https://github.com/apache/pulsar/pull/26988",
+          "title": "Document in CODING.md that a delayedExecutor() task cannot be taken back",
+          "caption": "Cancelling a future built on delayedExecutor() only skips the run; the queued task keeps its captured objects reachable until the delay ends, as a weak-reference check showed."
+        },
+        {
+          "id": "#26986",
+          "url": "https://github.com/apache/pulsar/pull/26986",
+          "title": "Complete a TableView refresh that waits for a message that could not be applied",
+          "caption": "When applying a message threw, its position was never recorded, so a refresh waiting for it hung on quiet topics; the position is now recorded before rethrowing."
+        },
+        {
+          "id": "#26686",
+          "url": "https://github.com/apache/pulsar/pull/26686",
+          "title": "Complete a v5 send in place while its client is closing",
+          "caption": "A send failure queued on the completion executor could be dropped by shutdownNow(), leaving the future pending; while the client closes, it is completed on the current thread."
+        },
+        {
+          "id": "#26684",
+          "url": "https://github.com/apache/pulsar/pull/26684",
+          "title": "Wait for the ack to be persisted before rewinding in V5StreamConsumerAckWatermarkTest",
+          "caption": "The in-process cursor reset could overtake the ack still on the wire, so the test now waits until the ack is applied and persisted before rewinding."
+        },
+        {
+          "id": "#26672",
+          "url": "https://github.com/apache/pulsar/pull/26672",
+          "title": "Schedule TableView tail-read retries instead of sleeping on the callback thread",
+          "caption": "A reviewer's note exposed a 50 ms sleep on the client callback thread; retries now use backoff on a delayed executor, and closing the view fails pending refreshes."
+        },
+        {
+          "id": "#24842",
+          "url": "https://github.com/apache/pulsar/pull/24842",
+          "title": "PIP-445: Propose message-mapped TableView builders",
+          "caption": "Proposal to add createMapped to TableViewBuilder, using the mapper-function design a maintainer suggested, so users can keep message metadata without extra cost for existing views."
+        },
+        {
+          "id": "#24809",
+          "url": "https://github.com/apache/pulsar/pull/24809",
+          "title": "PIP-445: Implement message-mapped TableView builders",
+          "caption": "Moved TableView logic into a shared generic base class for mapped views; a maintainer's final pass added the mapper error model that skips failing messages and reports them."
+        }
+      ]
+    },
+    {
+      "name": "Spring Framework",
+      "searchUrl": "https://github.com/spring-projects/spring-framework/pulls?q=is%3Apr%20author%3Anamest504%20is%3Aclosed",
+      "searchTitle": "Closed pull requests by namest504, including merged PRs",
+      "entries": [
+        {
+          "id": "#37545",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37545",
+          "title": "Require a semicolon before MIME type parameters",
+          "caption": "The 7.1 MIME type parser accepted whitespace alone as a parameter separator; this makes it reject such values again, following RFC 9110 and the 7.0.x behavior."
+        },
+        {
+          "id": "#37534",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37534",
+          "title": "Avoid leaking a temp file when the disk limit is exceeded in PartGenerator",
+          "caption": "Checks the per-part disk limit before creating a temporary file, so oversized buffered content does not leave an orphan file behind."
+        },
+        {
+          "id": "#37532",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37532",
+          "title": "Fix the fully populated check in DataClassRowMapper for classes with setters",
+          "caption": "Constructor parameters were removed from the mapped properties but not from the property name set, so checkFullyPopulated always failed for classes with setters."
+        },
+        {
+          "id": "#37531",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37531",
+          "title": "Make in-memory multipart Part content repeatable",
+          "caption": "In-memory parts shared one buffer read position, so a second content() or transferTo() call got empty data; each call now reads the bytes from the start."
+        },
+        {
+          "id": "#37525",
+          "url": "https://github.com/spring-projects/spring-framework/pull/37525",
+          "title": "Avoid overflow for the default maxDelay with timeUnit in @Retryable",
+          "caption": "Uses saturating TimeUnit.toMillis conversion for millisecond and larger units, avoiding overflow while preserving finer Duration precision."
+        }
+      ],
+      "note": [
+        {
+          "text": "#37534 was applied in "
+        },
+        {
+          "label": "d86e9fc",
+          "url": "https://github.com/spring-projects/spring-framework/commit/d86e9fc16fdf6816d076b95e83983775109d4e77"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    {
+      "name": "Spring Boot",
+      "searchUrl": "https://github.com/spring-projects/spring-boot/pulls?q=is%3Apr%20author%3Anamest504%20is%3Aclosed",
+      "searchTitle": "Closed pull requests by namest504, including merged PRs",
+      "entries": [
+        {
+          "id": "#52657",
+          "url": "https://github.com/spring-projects/spring-boot/pull/52657",
+          "title": "Keep an indented line after a document separator with trailing whitespace",
+          "caption": "Restores line and column tracking while skipping separator whitespace, so an indented profile property is not discarded as an empty key."
+        },
+        {
+          "id": "#47902",
+          "url": "https://github.com/spring-projects/spring-boot/pull/47902",
+          "title": "Remove an unnecessary stream opening in BootZipCopyAction",
+          "caption": "Removes an extra stream open around prepareStoredEntry, which already opens and closes the library stream itself."
+        }
+      ],
+      "note": [
+        {
+          "text": "#47902 was merged through "
+        },
+        {
+          "label": "7e0a913",
+          "url": "https://github.com/spring-projects/spring-boot/commit/7e0a9138a8d4a79df0bfd2cc59b8975374317276"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    {
+      "name": "Spring Security",
+      "searchUrl": "https://github.com/spring-projects/spring-security/pulls?q=is%3Apr%20author%3Anamest504%20is%3Aclosed",
+      "searchTitle": "Closed pull requests by namest504, including merged PRs",
+      "entries": [
+        {
+          "id": "#18101",
+          "url": "https://github.com/spring-projects/spring-security/pull/18101",
+          "title": "Make typ checks case-insensitive in JwtTypeValidator",
+          "caption": "Restores the case-insensitive matching of the JWT typ header that the earlier Nimbus JOSEObjectTypeVerifier had, and adds tests for mixed-case values."
+        }
+      ]
+    },
+    {
+      "name": "Gradle",
+      "searchUrl": "https://github.com/gradle/gradle/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#39260",
+          "url": "https://github.com/gradle/gradle/pull/39260",
+          "title": "Enable taskbar progress in Windows Terminal",
+          "caption": "Detects Windows Terminal through the WT_SESSION variable, which is also visible inside WSL, so Gradle sends OSC 9;4 progress sequences that show on the Windows taskbar."
+        }
+      ]
+    },
+    {
+      "name": "OpenClaw",
+      "searchUrl": "https://github.com/openclaw/openclaw/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#184157",
+          "url": "https://github.com/openclaw/openclaw/pull/184157",
+          "title": "Preserve transcript IDs across agent idle resets",
+          "caption": "Isolated CLI and Gateway reset paths that changed transcript IDs; a maintainer preserved those IDs in the merged fix, with co-author credit."
+        },
+        {
+          "id": "#156342",
+          "url": "https://github.com/openclaw/openclaw/pull/156342",
+          "title": "Retry once when the model writes a tool call as plain text",
+          "caption": "A tool-use stop with no structured call now uses the existing empty-response retry budget instead of failing; the text is never parsed or run as a tool call."
+        }
+      ],
+      "note": [
+        {
+          "text": "Co-authored #184157. "
+        },
+        {
+          "label": "Commit credit",
+          "url": "https://github.com/openclaw/openclaw/commit/cd8fd9070c4fe97da1c6c256e723192a5a0fa523"
+        }
+      ]
+    },
+    {
+      "name": "oh-my-pi",
+      "searchUrl": "https://github.com/can1357/oh-my-pi/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#17361",
+          "url": "https://github.com/can1357/oh-my-pi/pull/17361",
+          "title": "Show renamed Claude session titles in the import picker",
+          "caption": "Reads customTitle from the custom-title.json sidecar next to each Claude transcript, and falls back to the first prompt when the sidecar is missing or invalid."
+        }
+      ]
+    },
+    {
+      "name": "Apache Beam",
+      "searchUrl": "https://github.com/apache/beam/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#36344",
+          "url": "https://github.com/apache/beam/pull/36344",
+          "title": "Add field descriptions to the Bigtable schema config",
+          "caption": "Adds SchemaFieldDescription annotations so Bigtable configuration fields carry descriptions into the schema used by managed I/O."
+        }
+      ]
+    },
+    {
+      "name": "Apache Hadoop",
+      "searchUrl": "https://github.com/apache/hadoop/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#8603",
+          "url": "https://github.com/apache/hadoop/pull/8603",
+          "title": "HDFS-17943: Fix the error message for a negative domain socket disable interval",
+          "caption": "Separates the configuration key from the error text in a DfsClientConf precondition message for a negative socket-disable interval."
+        }
+      ]
+    },
+    {
+      "name": "Apache Gravitino",
+      "searchUrl": "https://github.com/apache/gravitino/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#8737",
+          "url": "https://github.com/apache/gravitino/pull/8737",
+          "title": "Add alias and version checks to model version CLI commands",
+          "caption": "Validates that alias or version is given in the model version update commands before they run, and adds handle() unit tests for these cases."
+        }
+      ]
+    },
+    {
+      "name": "Elastic Kibana",
+      "searchUrl": "https://github.com/elastic/kibana/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#239073",
+          "url": "https://github.com/elastic/kibana/pull/239073",
+          "title": "Fix the default perPage option in the point-in-time finder",
+          "caption": "Makes perPage non-optional in the finder's state and tests default options, keeping pagination and point-in-time cleanup checks tied to a numeric page size."
+        }
+      ]
+    },
+    {
+      "name": "OpenDataLoader PDF",
+      "searchUrl": "https://github.com/opendataloader-project/opendataloader-pdf/pulls?q=is%3Apr%20author%3Anamest504%20is%3Aclosed",
+      "searchTitle": "Closed pull requests by namest504, including merged PRs",
+      "entries": [
+        {
+          "id": "#632",
+          "url": "https://github.com/opendataloader-project/opendataloader-pdf/pull/632",
+          "title": "Strip duplicated bullet markers from Markdown list items",
+          "caption": "Traced doubled markers like '- •' to the Markdown list writer; the maintainers used this diagnosis to build their own fix at list detection, not this patch."
+        },
+        {
+          "id": "Issue #633",
+          "url": "https://github.com/opendataloader-project/opendataloader-pdf/issues/633",
+          "title": "--use-struct-tree silently disables --hybrid for tagged PDFs",
+          "caption": "Reported that the struct-tree branch is checked first, so the hybrid backend is never called with no warning; a maintainer fix in PR 638 now warns."
+        }
+      ],
+      "note": [
+        {
+          "text": "Diagnosis and bug reports. Maintainers implemented the fixes in "
+        },
+        {
+          "label": "627b012",
+          "url": "https://github.com/opendataloader-project/opendataloader-pdf/commit/627b012354"
+        },
+        {
+          "text": " and "
+        },
+        {
+          "label": "#638",
+          "url": "https://github.com/opendataloader-project/opendataloader-pdf/pull/638"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    {
+      "name": "Nuclei Burp Plugin",
+      "searchUrl": "https://github.com/projectdiscovery/nuclei-burp-plugin/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#124",
+          "url": "https://github.com/projectdiscovery/nuclei-burp-plugin/pull/124",
+          "title": "Add a pull request test workflow",
+          "caption": "Adds a GitHub Actions workflow to run unit tests on pull requests targeting the main branch."
+        }
+      ]
+    },
+    {
+      "name": "Exercises Dataset",
+      "searchUrl": "https://github.com/hasaneyldrm/exercises-dataset/pulls?q=is%3Apr%20author%3Anamest504%20is%3Aclosed",
+      "searchTitle": "Closed pull requests by namest504, including merged PRs",
+      "entries": [
+        {
+          "id": "#27",
+          "url": "https://github.com/hasaneyldrm/exercises-dataset/pull/27",
+          "title": "Add Korean translation",
+          "caption": "Contributed Korean exercise instructions; the maintainer normalized the data and adopted the translations with co-author credit."
+        }
+      ],
+      "note": [
+        {
+          "text": "Translation content applied in "
+        },
+        {
+          "label": "118e4bd",
+          "url": "https://github.com/hasaneyldrm/exercises-dataset/commit/118e4bd"
+        },
+        {
+          "text": ", with co-author credit."
+        }
+      ]
+    },
+    {
+      "name": "First Contributions",
+      "searchUrl": "https://github.com/firstcontributions/first-contributions/pulls?q=is%3Apr%20author%3Anamest504%20is%3Amerged",
+      "searchTitle": "Merged pull requests by namest504",
+      "entries": [
+        {
+          "id": "#105473",
+          "url": "https://github.com/firstcontributions/first-contributions/pull/105473",
+          "title": "Translate image alt text to Korean",
+          "caption": "Localizes the image alt text in the Korean contribution tutorial, so that description is also available in Korean."
+        }
+      ]
+    }
+  ]
+}

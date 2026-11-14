@@ -1,10 +1,15 @@
+{{ define "page-class" }}page--reading blog-page{{ end }}
 {{ define "main" }}
-<div class="columns">
-  <div class="feed">
-    <h1 class="list-title">{{ .Title }}</h1>
-    {{ partial "tabs.html" . }}
-    {{ partial "post-list.html" .Pages.ByDate.Reverse }}
-  </div>
-  {{ partial "sidebar.html" . }}
-</div>
+{{- /* build.render=never인 글(포트폴리오 등)은 주소가 없으므로 목록에서 뺀다. */ -}}
+{{- $posts := where .Pages "RelPermalink" "ne" "" -}}
+{{- $pager := .Paginate $posts.ByDate.Reverse 20 -}}
+<header class="blog-intro">
+  {{- with .Parent }}
+  <a class="blog-back" href="{{ .RelPermalink }}"><span aria-hidden="true">←</span> {{ .Title }}</a>
+  {{- end }}
+  <h1>{{ .Title }}</h1>
+  <p class="blog-note">글 {{ len $posts }}편</p>
+</header>
+{{ partial "post-list.html" $pager.Pages }}
+{{ partial "pagination.html" $pager }}
 {{ end }}

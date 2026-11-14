@@ -1,10 +1,15 @@
+{{ define "page-class" }}page--reading blog-page{{ end }}
 {{ define "main" }}
-<div class="columns">
-  <div class="feed">
-    <h1 class="list-title">{{ .Title }}</h1>
-    {{ partial "tabs.html" . }}
-    {{ partial "post-list.html" .RegularPages.ByDate.Reverse }}
-  </div>
-  {{ partial "sidebar.html" . }}
-</div>
+{{- $pager := .Paginate .RegularPages.ByDate.Reverse 20 -}}
+<header class="blog-intro">
+  <h1>{{ if eq .Section "blog" }}Blog{{ else }}{{ .Title }}{{ end }}</h1>
+  {{- if eq .Section "blog" }}
+  <p class="blog-note">
+    {{- with site.GetPage "/categories" }}<a href="{{ .RelPermalink }}">Categories</a>{{ end -}}
+    {{- with site.GetPage "/tags" }}<span aria-hidden="true">·</span><a href="{{ .RelPermalink }}">Tags</a>{{ end -}}
+  </p>
+  {{- end }}
+</header>
+{{ partial "post-list.html" $pager.Pages }}
+{{ partial "pagination.html" $pager }}
 {{ end }}

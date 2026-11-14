@@ -1,0 +1,63 @@
+/* Hallmark · theme: studied-DNA (https://antfu.me/) · neutral reading surface
+ * Original layout and motion implementation; no reference artwork or signature reused. */
+:root {
+  color-scheme: light;
+  --color-paper: oklch(99% 0.002 250);
+  --color-ink: oklch(25% 0.006 250);
+  --color-body: oklch(39% 0.008 250);
+  --color-muted: oklch(51% 0.008 250);
+  --color-rule: oklch(85% 0.006 250);
+  --color-accent: oklch(43% 0.08 170);
+  --color-accent-ink: oklch(99% 0.002 250);
+  --color-tint: oklch(96% 0.007 250);
+  --color-focus: oklch(48% 0.13 230);
+  --color-error: oklch(50% 0.16 25);
+  --color-code: oklch(96% 0.004 250);
+  --color-add: oklch(93% 0.035 155);
+  --color-remove: oklch(94% 0.035 25);
+  --color-code-keyword: oklch(48% 0.14 290);
+  --color-code-string: oklch(43% 0.10 155);
+  --color-code-type: oklch(45% 0.10 220);
+  --color-transparent: transparent;
+  --font-body: 'Inter', 'Gothic A1', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-body);
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --text-small: 12px;
+  --text-meta: 13px;
+  --text-body: 16px;
+  --text-lead: 18px;
+  --text-heading: 22px;
+  --text-display: 36px;
+  --rule-thin: 1px;
+  --radius-small: 6px;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-fast: 180ms;
+  --dur-enter: 450ms;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: oklch(16% 0.005 250);
+  --color-ink: oklch(93% 0.004 250);
+  --color-body: oklch(79% 0.006 250);
+  --color-muted: oklch(66% 0.006 250);
+  --color-rule: oklch(33% 0.006 250);
+  --color-accent: oklch(78% 0.08 170);
+  --color-accent-ink: oklch(16% 0.005 250);
+  --color-tint: oklch(23% 0.008 250);
+  --color-focus: oklch(77% 0.11 230);
+  --color-error: oklch(75% 0.13 25);
+  --color-code: oklch(20% 0.006 250);
+  --color-add: oklch(28% 0.035 155);
+  --color-remove: oklch(28% 0.035 25);
+  --color-code-keyword: oklch(77% 0.10 290);
+  --color-code-string: oklch(79% 0.10 155);
+  --color-code-type: oklch(79% 0.09 220);
+}

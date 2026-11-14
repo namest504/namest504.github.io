@@ -1,0 +1,23 @@
+{{- /* 인자: .Paginate가 돌려준 paginator. 쪽이 하나뿐이면 아무것도 그리지 않는다. */ -}}
+{{- $pager := . -}}
+{{- if gt $pager.TotalPages 1 }}
+<nav class="pagination" aria-label="글 목록 쪽">
+  {{- with $pager.Prev }}
+  <a class="pagination-step" href="{{ .URL }}" rel="prev"><span aria-hidden="true">←</span> 최근 글</a>
+  {{- end }}
+  <ol class="pagination-pages">
+    {{- range $pager.Pagers }}
+    <li>
+      {{- if eq .PageNumber $pager.PageNumber }}
+      <a href="{{ .URL }}" aria-current="page" aria-label="{{ .PageNumber }}쪽">{{ .PageNumber }}</a>
+      {{- else }}
+      <a href="{{ .URL }}" aria-label="{{ .PageNumber }}쪽">{{ .PageNumber }}</a>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ol>
+  {{- with $pager.Next }}
+  <a class="pagination-step" href="{{ .URL }}" rel="next">지난 글 <span aria-hidden="true">→</span></a>
+  {{- end }}
+</nav>
+{{- end }}

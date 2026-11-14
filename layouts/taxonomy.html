@@ -1,8 +1,17 @@
+{{ define "page-class" }}page--reading blog-page{{ end }}
 {{ define "main" }}
-<div class="narrow">
-  <h1 class="page-title">{{ .Title }}</h1>
-  <div class="chips">
-    {{ range .Data.Terms.ByCount }}<a class="chip" href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a>{{ end }}
-  </div>
-</div>
+<header class="blog-intro">
+  {{- with site.GetPage "/blog" }}
+  <a class="blog-back" href="{{ .RelPermalink }}"><span aria-hidden="true">←</span> Blog</a>
+  {{- end }}
+  <h1>{{ .Title }}</h1>
+</header>
+<ul class="term-list">
+  {{- range .Data.Terms.ByCount }}
+  {{- $count := len (where .Pages "RelPermalink" "ne" "") }}
+  {{- if $count }}
+  <li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}<span class="term-count"><span class="sr-only">, 글 </span>{{ $count }}<span class="sr-only">편</span></span></a></li>
+  {{- end }}
+  {{- end }}
+</ul>
 {{ end }}

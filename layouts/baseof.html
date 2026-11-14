@@ -1,14 +1,19 @@
 <!doctype html>
-<html lang="ko">
+<html lang="{{ if .IsHome }}en{{ else }}{{ .Params.pageLanguage | default "ko" }}{{ end }}">
 <head>
 {{ partial "head.html" . }}
 </head>
 <body>
-<a class="skip" href="#main">본문으로 건너뛰기</a>
+<a class="skip-link" href="#main">Skip to content</a>
+<canvas id="ambient" aria-hidden="true"></canvas>
 {{ partial "header.html" . }}
-<main id="main">
+<main id="main" class="page page-enter {{ block "page-class" . }}page--reading{{ end }}">
 {{ block "main" . }}{{ end }}
 </main>
 {{ partial "footer.html" . }}
+{{ range slice "site" "article" "contributions" }}
+{{ $script := resources.Get (printf "js/%s.js" .) | minify | fingerprint }}
+<script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+{{ end }}
 </body>
 </html>

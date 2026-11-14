@@ -1,5 +1,5 @@
 baseURL = "https://namest504.github.io/"
-title = "namest504"
+title = "SeungTaek Lim · namest504"
 languageCode = "ko-KR"
 defaultContentLanguage = "ko"
 hasCJKLanguage = true
@@ -7,8 +7,9 @@ enableRobotsTXT = true
 summaryLength = 60
 
 [params]
-  description = "오픈소스 코드를 읽고 고치면서 알게 된 기술 내용을, 처음 보는 사람도 따라올 수 있게 풀어 씁니다."
-  author = "namest504"
+  description = "SeungTaek Lim (namest504). Open-source contributions and writing about backend code and debugging."
+  author = "SeungTaek Lim"
+  handle = "namest504"
   github = "https://github.com/namest504"
   # 검색 등록 도구에서 받은 확인 값을 넣으면 확인용 태그가 들어갑니다.
   googleSiteVerification = ""
@@ -40,3 +41,11 @@ summaryLength = 60
 
 [markup.goldmark.renderer]
   unsafe = false
+
+# Public site pages override matching informational pages in the private post repository.
+[[module.mounts]]
+  source = "site-content"
+  target = "content"
+[[module.mounts]]
+  source = "content"
+  target = "content"

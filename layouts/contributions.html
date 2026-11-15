@@ -41,28 +41,67 @@
 </section>
 <section id="all-panel" class="tab-panel" aria-labelledby="all-heading">
   <h2 id="all-heading" class="contrib-panel-title">All Contributions</h2>
-  {{- range $i, $p := $data.projects }}
-  {{- $count := len $p.entries }}
-  <article class="project-group">
-    <div class="project-heading">
-      <h3 id="project-{{ $i }}-title"><a href="{{ $p.searchUrl }}" title="{{ $p.searchTitle }}">{{ $p.name }} {{ $arrow }}</a></h3>
-      <span class="project-count">{{ $count }} {{ cond (eq $count 1) "entry" "entries" }}</span>
-      <button class="project-toggle" type="button" aria-expanded="true" aria-controls="project-{{ $i }}-entries" aria-label="Hide contributions to {{ $p.name }}" data-project="{{ $p.name }}" hidden><span>{{ $count }} {{ cond (eq $count 1) "entry" "entries" }}</span><span class="toggle-sign" aria-hidden="true">−</span></button>
+  <div class="contrib-explorer" data-view="cards">
+    <div class="explorer-controls" hidden>
+      <p class="explorer-intro">Browse by project. Open an entry for the details and original discussion.</p>
+      <div class="explorer-toolbar">
+        <div class="project-filters" role="group" aria-label="Filter by project">
+          {{ range slice "All" "Pulsar" "Spring" "Other" }}
+          <button type="button" data-filter="{{ lower . }}" aria-pressed="{{ eq . "All" }}">{{ . }} <span class="filter-count"></span></button>
+          {{ end }}
+        </div>
+        <label class="contrib-search"><span class="sr-only">Search contributions</span><input type="search" placeholder="Search title, project or PR…" autocomplete="off"></label>
+      </div>
+      <div class="explorer-results">
+        <p class="result-count" role="status" aria-live="polite"></p>
+        <div class="result-actions">
+          <button class="expand-entries" type="button" hidden>Expand descriptions</button>
+          <div class="view-switch" role="group" aria-label="Display layout">
+            <button type="button" data-view="list" aria-pressed="false">List</button>
+            <button type="button" data-view="cards" aria-pressed="true">Cards</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="project-{{ $i }}-entries" class="project-body" role="region" aria-labelledby="project-{{ $i }}-title">
-      <ul class="pr-list">
-        {{- range $p.entries }}
-        <li class="pr-entry">
-          <h4><a href="{{ .url }}"><span class="pr-id">{{ .id }}</span>{{ .title }} {{ $arrow }}</a></h4>
-          <p class="pr-caption">{{ .caption }}</p>
-        </li>
+    <div class="contrib-entries">
+      {{- range $i, $p := $data.projects }}
+      {{- $category := "other" }}
+      {{- if eq $p.name "Apache Pulsar" }}{{ $category = "pulsar" }}{{ else if strings.HasPrefix $p.name "Spring " }}{{ $category = "spring" }}{{ end }}
+      <section class="project-group" data-category="{{ $category }}" data-project="{{ $p.name }}" aria-labelledby="project-{{ $i }}-title">
+        <h3 id="project-{{ $i }}-title" class="project-heading"><a href="{{ $p.searchUrl }}" title="{{ $p.searchTitle }}">{{ $p.name }} {{ $arrow }}</a> <span class="project-count">{{ len $p.entries }}</span></h3>
+        <ul class="entry-list">
+          {{- range $p.entries }}
+          <li class="contrib-entry">
+            <details open>
+              <summary>
+                <span class="entry-project">{{ $p.name }}</span>
+                <span class="entry-id">{{ .id }}</span>
+                <span class="entry-title">{{ .displayTitle | default .title }}</span>
+                <span class="entry-preview" aria-hidden="true">{{ .caption }}</span>
+                <span class="entry-kind{{ with .kind }} is-special{{ end }}">{{ .kind | default "PR" }}</span>
+                <span class="entry-action" aria-hidden="true">Details <span>↗</span></span>
+              </summary>
+              <div class="entry-detail">
+                <p>{{ .caption }}</p>
+                <p class="entry-original">Original title: {{ .title }}</p>
+                <a class="entry-source" href="{{ .url }}">View {{ if strings.HasPrefix .id "Issue " }}issue{{ else }}pull request{{ end }} on GitHub {{ $arrow }}</a>
+              </div>
+            </details>
+          </li>
+          {{- end }}
+        </ul>
+        {{- with $p.note }}
+        <p class="adoption-note">{{ range . }}{{ if .url }}<a href="{{ .url }}">{{ .label }} {{ $arrow }}</a>{{ else }}{{ .text }}{{ end }}{{ end }}</p>
         {{- end }}
-      </ul>
-      {{- with $p.note }}
-      <p class="adoption-note">{{ range . }}{{ if .url }}<a href="{{ .url }}">{{ .label }} {{ $arrow }}</a>{{ else }}{{ .text }}{{ end }}{{ end }}</p>
+      </section>
       {{- end }}
     </div>
-  </article>
-  {{- end }}
+    <div class="contrib-empty" hidden><h3>No matching contributions</h3><p>Try another keyword or clear the filters.</p><button type="button">Clear filters</button></div>
+  </div>
+  <dialog class="contribution-dialog" aria-labelledby="contribution-dialog-title">
+    <div class="dialog-header"><p class="dialog-project"></p><button type="button" class="dialog-close" autofocus>Close <span aria-hidden="true">×</span></button></div>
+    <h3 id="contribution-dialog-title"></h3>
+    <div class="dialog-content"></div>
+  </dialog>
 </section>
 {{ end }}

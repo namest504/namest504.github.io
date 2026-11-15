@@ -18,7 +18,7 @@
     );
   }
 
-  // Without JS both panels and every project list stay visible; turn them into tabs and disclosures here.
+  // Without JS both panels and all entry details remain readable.
   const tabs = [...tablist.querySelectorAll('[role="tab"]')];
   for (const tab of tabs) {
     const panel = document.getElementById(tab.getAttribute('aria-controls'));
@@ -56,21 +56,133 @@
     });
   }
 
-  function setExpanded(button, expanded) {
-    button.setAttribute('aria-expanded', String(expanded));
-    button.setAttribute('aria-label', `${expanded ? 'Hide' : 'Show'} contributions to ${button.dataset.project}`);
-    button.querySelector('.toggle-sign').textContent = expanded ? '−' : '+';
-    document.getElementById(button.getAttribute('aria-controls')).hidden = !expanded;
+  const explorer = page.querySelector('.contrib-explorer');
+  const dialog = page.querySelector('.contribution-dialog');
+  const search = explorer.querySelector('input[type="search"]');
+  const filters = [...explorer.querySelectorAll('[data-filter]')];
+  const views = [...explorer.querySelectorAll('.view-switch button')];
+  const expandButton = explorer.querySelector('.expand-entries');
+  const empty = explorer.querySelector('.contrib-empty');
+  const groups = [...explorer.querySelectorAll('.project-group')].map(element => ({
+    element,
+    entries: [...element.querySelectorAll('.contrib-entry')].map(entry => ({
+      element: entry,
+      details: entry.querySelector('details'),
+      summary: entry.querySelector('summary'),
+      text: `${element.dataset.project} ${entry.textContent}`.toLowerCase(),
+    })),
+  }));
+  let filter = 'all';
+  let view = 'cards';
+  let opener;
+  const canShowDialog = typeof dialog.showModal === 'function';
+
+  function visibleEntries() {
+    return groups.flatMap(group => group.entries.filter(entry => !entry.element.hidden));
   }
-  for (const button of page.querySelectorAll('.project-toggle')) {
-    const count = button.parentElement.querySelector('.project-count');
-    if (count) count.hidden = true;
-    setExpanded(button, false);
-    button.hidden = false;
+
+  function updateExpandButton() {
+    const visible = visibleEntries();
+    expandButton.hidden = view !== 'list' || !visible.length;
+    expandButton.textContent = visible.length && visible.every(entry => entry.details.open)
+      ? 'Collapse descriptions' : 'Expand descriptions';
+  }
+
+  function applyFilters() {
+    const query = search.value.trim().toLowerCase();
+    let entryCount = 0;
+    let projectCount = 0;
+    for (const group of groups) {
+      let count = 0;
+      for (const entry of group.entries) {
+        entry.element.hidden = (filter !== 'all' && filter !== group.element.dataset.category)
+          || !entry.text.includes(query);
+        if (!entry.element.hidden) count++;
+      }
+      group.element.hidden = count === 0;
+      group.element.querySelector('.project-count').textContent = count;
+      entryCount += count;
+      if (count) projectCount++;
+    }
+    explorer.querySelector('.result-count').textContent =
+      `${entryCount} ${entryCount === 1 ? 'entry' : 'entries'} · ${projectCount} ${projectCount === 1 ? 'project' : 'projects'}`;
+    empty.hidden = entryCount !== 0;
+    for (const button of filters) button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+    updateExpandButton();
+  }
+
+  function setView(nextView) {
+    view = nextView;
+    explorer.dataset.view = view;
+    for (const button of views) button.setAttribute('aria-pressed', String(button.dataset.view === view));
+    for (const group of groups) {
+      for (const entry of group.entries) {
+        entry.details.open = false;
+        if (view === 'cards' && canShowDialog) entry.summary.setAttribute('aria-haspopup', 'dialog');
+        else entry.summary.removeAttribute('aria-haspopup');
+      }
+    }
+    updateExpandButton();
+  }
+
+  for (const group of groups) {
+    for (const entry of group.entries) {
+      entry.details.addEventListener('toggle', updateExpandButton);
+      entry.summary.addEventListener('click', event => {
+        if (view !== 'cards' || !canShowDialog) return;
+        event.preventDefault();
+        opener = entry.summary;
+        dialog.querySelector('.dialog-project').textContent =
+          `${group.element.dataset.project} · ${entry.element.querySelector('.entry-id').textContent}`;
+        dialog.querySelector('h3').textContent = entry.element.querySelector('.entry-title').textContent;
+        const content = dialog.querySelector('.dialog-content');
+        content.replaceChildren(entry.element.querySelector('.entry-detail').cloneNode(true));
+        const note = group.element.querySelector('.adoption-note');
+        if (note) {
+          const label = document.createElement('p');
+          label.className = 'dialog-note-label';
+          label.textContent = 'Project context';
+          content.append(label, note.cloneNode(true));
+        }
+        dialog.showModal();
+      });
+    }
+  }
+  dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => {
+    if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+  });
+  dialog.addEventListener('click', event => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right
+      || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+  });
+  for (const button of filters) {
+    button.querySelector('.filter-count').textContent = groups
+      .filter(group => button.dataset.filter === 'all' || group.element.dataset.category === button.dataset.filter)
+      .reduce((count, group) => count + group.entries.length, 0);
     button.addEventListener('click', () => {
-      const expanded = button.getAttribute('aria-expanded') !== 'true';
-      setExpanded(button, expanded);
-      if (expanded) enter(document.getElementById(button.getAttribute('aria-controls')));
+      filter = button.dataset.filter;
+      applyFilters();
     });
   }
+  for (const button of views) button.addEventListener('click', () => setView(button.dataset.view));
+  search.addEventListener('input', applyFilters);
+  empty.querySelector('button').addEventListener('click', () => {
+    filter = 'all';
+    search.value = '';
+    applyFilters();
+    search.focus();
+  });
+  expandButton.addEventListener('click', () => {
+    const visible = visibleEntries();
+    const expand = !visible.every(entry => entry.details.open);
+    for (const entry of visible) entry.details.open = expand;
+    updateExpandButton();
+  });
+  explorer.classList.add('is-enhanced');
+  setView('cards');
+  applyFilters();
+  explorer.querySelector('.explorer-controls').hidden = false;
 })();

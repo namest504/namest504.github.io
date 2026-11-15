@@ -174,96 +174,112 @@
           "id": "#27449",
           "url": "https://github.com/apache/pulsar/pull/27449",
           "title": "Re-run the migration check until ClusterMigrationTest producers can migrate",
+          "displayTitle": "Wait for migration readiness",
           "caption": "Repeats the migration check until replication backlog drains, matching the broker's periodic behavior instead of relying on a single check."
         },
         {
           "id": "#27448",
           "url": "https://github.com/apache/pulsar/pull/27448",
           "title": "Wait for replication markers in the deduplication test",
+          "displayTitle": "Wait for the right replication marker",
           "caption": "Waiting for a new snapshot id raced the 100 ms snapshot timer; the test now waits for the replication marker entry written after each message."
         },
         {
           "id": "#27447",
           "url": "https://github.com/apache/pulsar/pull/27447",
           "title": "Export the Prometheus Java client 1.x registry from the Functions worker /metrics",
+          "displayTitle": "Keep worker metrics visible after the Prometheus upgrade",
           "caption": "The standalone worker writes the 1.x default registry after its existing simpleclient output, so cache metrics stay visible as collectors move to the new client."
         },
         {
           "id": "#27350",
           "url": "https://github.com/apache/pulsar/pull/27350",
           "title": "Expose the Prometheus Java client 1.x registry in broker and proxy metrics",
+          "displayTitle": "Expose both Prometheus registries",
           "caption": "Broker and proxy /metrics now write both registries; a byte-stream filter adds the cluster label to 1.x output, and in-process bookies get a separate registry."
         },
         {
           "id": "#27112",
           "url": "https://github.com/apache/pulsar/pull/27112",
           "title": "Wait for the first encryption key load before completing producer creation",
+          "displayTitle": "Wait for encryption keys before creating a producer",
           "caption": "With a slow key reader, the connection finished first and create() returned a producer with no key; creation now also waits for the first key load."
         },
         {
           "id": "#27062",
           "url": "https://github.com/apache/pulsar/pull/27062",
           "title": "Flush pending acks before the flow command when a consumer reconnects",
+          "displayTitle": "Prevent duplicate delivery after reconnect",
           "caption": "Sending permits first let the broker redeliver messages whose acks were still queued; flushing acks first on the same connection avoids handing duplicates to applications."
         },
         {
           "id": "#27061",
           "url": "https://github.com/apache/pulsar/pull/27061",
           "title": "Stop the partition update timer when a partitioned producer fails during creation",
+          "displayTitle": "Stop the timer after producer creation fails",
           "caption": "A producer that closed inside its constructor still scheduled a timer whose finally block kept rescheduling it; the timer now stops once the producer has closed or failed."
         },
         {
           "id": "#27025",
           "url": "https://github.com/apache/pulsar/pull/27025",
           "title": "Stub the cancellable listener in PulsarLedgerCreateRecoveryTest",
+          "displayTitle": "Fix recovery-test cleanup",
           "caption": "Returns a non-null cancellation handle from the mocked metadata store, preventing cleanup from failing after the listener API changed."
         },
         {
           "id": "#27024",
           "url": "https://github.com/apache/pulsar/pull/27024",
           "title": "Close the producer when its encryption key cannot be loaded",
+          "displayTitle": "Close producers when key loading fails",
           "caption": "A failed key load failed create() but left the producer connecting and registered on the broker, so retries piled up producers; it is now closed and removed."
         },
         {
           "id": "#26988",
           "url": "https://github.com/apache/pulsar/pull/26988",
           "title": "Document in CODING.md that a delayedExecutor() task cannot be taken back",
+          "displayTitle": "Document delayed-task cancellation limits",
           "caption": "Cancelling a future built on delayedExecutor() only skips the run; the queued task keeps its captured objects reachable until the delay ends, as a weak-reference check showed."
         },
         {
           "id": "#26986",
           "url": "https://github.com/apache/pulsar/pull/26986",
           "title": "Complete a TableView refresh that waits for a message that could not be applied",
+          "displayTitle": "Finish TableView refresh after a failed message",
           "caption": "When applying a message threw, its position was never recorded, so a refresh waiting for it hung on quiet topics; the position is now recorded before rethrowing."
         },
         {
           "id": "#26686",
           "url": "https://github.com/apache/pulsar/pull/26686",
           "title": "Complete a v5 send in place while its client is closing",
+          "displayTitle": "Complete pending sends during client shutdown",
           "caption": "A send failure queued on the completion executor could be dropped by shutdownNow(), leaving the future pending; while the client closes, it is completed on the current thread."
         },
         {
           "id": "#26684",
           "url": "https://github.com/apache/pulsar/pull/26684",
           "title": "Wait for the ack to be persisted before rewinding in V5StreamConsumerAckWatermarkTest",
+          "displayTitle": "Wait for persisted ACKs before rewinding",
           "caption": "The in-process cursor reset could overtake the ack still on the wire, so the test now waits until the ack is applied and persisted before rewinding."
         },
         {
           "id": "#26672",
           "url": "https://github.com/apache/pulsar/pull/26672",
           "title": "Schedule TableView tail-read retries instead of sleeping on the callback thread",
+          "displayTitle": "Retry TableView reads without blocking callbacks",
           "caption": "A reviewer's note exposed a 50 ms sleep on the client callback thread; retries now use backoff on a delayed executor, and closing the view fails pending refreshes."
         },
         {
           "id": "#24842",
           "url": "https://github.com/apache/pulsar/pull/24842",
           "title": "PIP-445: Propose message-mapped TableView builders",
+          "displayTitle": "Propose message-mapped TableView builders",
           "caption": "Proposal to add createMapped to TableViewBuilder, using the mapper-function design a maintainer suggested, so users can keep message metadata without extra cost for existing views."
         },
         {
           "id": "#24809",
           "url": "https://github.com/apache/pulsar/pull/24809",
           "title": "PIP-445: Implement message-mapped TableView builders",
+          "displayTitle": "Implement message-mapped TableView builders",
           "caption": "Moved TableView logic into a shared generic base class for mapped views; a maintainer's final pass added the mapper error model that skips failing messages and reports them."
         }
       ]
@@ -277,30 +293,35 @@
           "id": "#37545",
           "url": "https://github.com/spring-projects/spring-framework/pull/37545",
           "title": "Require a semicolon before MIME type parameters",
+          "displayTitle": "Reject malformed MIME type parameters",
           "caption": "The 7.1 MIME type parser accepted whitespace alone as a parameter separator; this makes it reject such values again, following RFC 9110 and the 7.0.x behavior."
         },
         {
           "id": "#37534",
           "url": "https://github.com/spring-projects/spring-framework/pull/37534",
           "title": "Avoid leaking a temp file when the disk limit is exceeded in PartGenerator",
+          "displayTitle": "Avoid temporary-file leaks on oversized uploads",
           "caption": "Checks the per-part disk limit before creating a temporary file, so oversized buffered content does not leave an orphan file behind."
         },
         {
           "id": "#37532",
           "url": "https://github.com/spring-projects/spring-framework/pull/37532",
           "title": "Fix the fully populated check in DataClassRowMapper for classes with setters",
+          "displayTitle": "Fix property checks for constructor-mapped classes",
           "caption": "Constructor parameters were removed from the mapped properties but not from the property name set, so checkFullyPopulated always failed for classes with setters."
         },
         {
           "id": "#37531",
           "url": "https://github.com/spring-projects/spring-framework/pull/37531",
           "title": "Make in-memory multipart Part content repeatable",
+          "displayTitle": "Make uploaded files readable more than once",
           "caption": "In-memory parts shared one buffer read position, so a second content() or transferTo() call got empty data; each call now reads the bytes from the start."
         },
         {
           "id": "#37525",
           "url": "https://github.com/spring-projects/spring-framework/pull/37525",
           "title": "Avoid overflow for the default maxDelay with timeUnit in @Retryable",
+          "displayTitle": "Prevent retry-delay overflow",
           "caption": "Uses saturating TimeUnit.toMillis conversion for millisecond and larger units, avoiding overflow while preserving finer Duration precision."
         }
       ],
@@ -326,12 +347,14 @@
           "id": "#52657",
           "url": "https://github.com/spring-projects/spring-boot/pull/52657",
           "title": "Keep an indented line after a document separator with trailing whitespace",
+          "displayTitle": "Keep indented properties after YAML separators",
           "caption": "Restores line and column tracking while skipping separator whitespace, so an indented profile property is not discarded as an empty key."
         },
         {
           "id": "#47902",
           "url": "https://github.com/spring-projects/spring-boot/pull/47902",
           "title": "Remove an unnecessary stream opening in BootZipCopyAction",
+          "displayTitle": "Remove an extra stream open during ZIP copying",
           "caption": "Removes an extra stream open around prepareStoredEntry, which already opens and closes the library stream itself."
         }
       ],
@@ -357,6 +380,7 @@
           "id": "#18101",
           "url": "https://github.com/spring-projects/spring-security/pull/18101",
           "title": "Make typ checks case-insensitive in JwtTypeValidator",
+          "displayTitle": "Accept mixed-case JWT type headers",
           "caption": "Restores the case-insensitive matching of the JWT typ header that the earlier Nimbus JOSEObjectTypeVerifier had, and adds tests for mixed-case values."
         }
       ]
@@ -370,6 +394,7 @@
           "id": "#39260",
           "url": "https://github.com/gradle/gradle/pull/39260",
           "title": "Enable taskbar progress in Windows Terminal",
+          "displayTitle": "Show build progress in Windows Terminal",
           "caption": "Detects Windows Terminal through the WT_SESSION variable, which is also visible inside WSL, so Gradle sends OSC 9;4 progress sequences that show on the Windows taskbar."
         }
       ]
@@ -383,12 +408,15 @@
           "id": "#184157",
           "url": "https://github.com/openclaw/openclaw/pull/184157",
           "title": "Preserve transcript IDs across agent idle resets",
+          "displayTitle": "Preserve transcripts across idle resets",
+          "kind": "Co-authored",
           "caption": "Isolated CLI and Gateway reset paths that changed transcript IDs; a maintainer preserved those IDs in the merged fix, with co-author credit."
         },
         {
           "id": "#156342",
           "url": "https://github.com/openclaw/openclaw/pull/156342",
           "title": "Retry once when the model writes a tool call as plain text",
+          "displayTitle": "Retry malformed tool-call responses once",
           "caption": "A tool-use stop with no structured call now uses the existing empty-response retry budget instead of failing; the text is never parsed or run as a tool call."
         }
       ],
@@ -411,6 +439,7 @@
           "id": "#17361",
           "url": "https://github.com/can1357/oh-my-pi/pull/17361",
           "title": "Show renamed Claude session titles in the import picker",
+          "displayTitle": "Show renamed Claude sessions in the import picker",
           "caption": "Reads customTitle from the custom-title.json sidecar next to each Claude transcript, and falls back to the first prompt when the sidecar is missing or invalid."
         }
       ]
@@ -424,6 +453,7 @@
           "id": "#36344",
           "url": "https://github.com/apache/beam/pull/36344",
           "title": "Add field descriptions to the Bigtable schema config",
+          "displayTitle": "Describe Bigtable configuration fields",
           "caption": "Adds SchemaFieldDescription annotations so Bigtable configuration fields carry descriptions into the schema used by managed I/O."
         }
       ]
@@ -437,6 +467,7 @@
           "id": "#8603",
           "url": "https://github.com/apache/hadoop/pull/8603",
           "title": "HDFS-17943: Fix the error message for a negative domain socket disable interval",
+          "displayTitle": "Clarify the domain-socket configuration error",
           "caption": "Separates the configuration key from the error text in a DfsClientConf precondition message for a negative socket-disable interval."
         }
       ]
@@ -450,6 +481,7 @@
           "id": "#8737",
           "url": "https://github.com/apache/gravitino/pull/8737",
           "title": "Add alias and version checks to model version CLI commands",
+          "displayTitle": "Validate model aliases and versions",
           "caption": "Validates that alias or version is given in the model version update commands before they run, and adds handle() unit tests for these cases."
         }
       ]
@@ -463,6 +495,7 @@
           "id": "#239073",
           "url": "https://github.com/elastic/kibana/pull/239073",
           "title": "Fix the default perPage option in the point-in-time finder",
+          "displayTitle": "Set a safe default page size",
           "caption": "Makes perPage non-optional in the finder's state and tests default options, keeping pagination and point-in-time cleanup checks tied to a numeric page size."
         }
       ]
@@ -476,12 +509,16 @@
           "id": "#632",
           "url": "https://github.com/opendataloader-project/opendataloader-pdf/pull/632",
           "title": "Strip duplicated bullet markers from Markdown list items",
+          "displayTitle": "Diagnose duplicated Markdown bullets",
+          "kind": "Diagnosis",
           "caption": "Traced doubled markers like '- •' to the Markdown list writer; the maintainers used this diagnosis to build their own fix at list detection, not this patch."
         },
         {
           "id": "Issue #633",
           "url": "https://github.com/opendataloader-project/opendataloader-pdf/issues/633",
           "title": "--use-struct-tree silently disables --hybrid for tagged PDFs",
+          "displayTitle": "Report a silently skipped hybrid PDF backend",
+          "kind": "Bug report",
           "caption": "Reported that the struct-tree branch is checked first, so the hybrid backend is never called with no warning; a maintainer fix in PR 638 now warns."
         }
       ],
@@ -514,6 +551,7 @@
           "id": "#124",
           "url": "https://github.com/projectdiscovery/nuclei-burp-plugin/pull/124",
           "title": "Add a pull request test workflow",
+          "displayTitle": "Run tests on pull requests",
           "caption": "Adds a GitHub Actions workflow to run unit tests on pull requests targeting the main branch."
         }
       ]
@@ -527,6 +565,8 @@
           "id": "#27",
           "url": "https://github.com/hasaneyldrm/exercises-dataset/pull/27",
           "title": "Add Korean translation",
+          "displayTitle": "Translate exercise instructions into Korean",
+          "kind": "Co-authored",
           "caption": "Contributed Korean exercise instructions; the maintainer normalized the data and adopted the translations with co-author credit."
         }
       ],
@@ -552,6 +592,7 @@
           "id": "#105473",
           "url": "https://github.com/firstcontributions/first-contributions/pull/105473",
           "title": "Translate image alt text to Korean",
+          "displayTitle": "Translate tutorial image descriptions into Korean",
           "caption": "Localizes the image alt text in the Korean contribution tutorial, so that description is also available in Korean."
         }
       ]
